@@ -1,0 +1,30 @@
+{
+  "name": "plexus-form",
+  "version": "0.0.1",
+  "description": "A dynamic form component for react using JSON-Schema.",
+  "keywords": [
+    "JSON-Schema",
+    "react",
+    "form"
+  ],
+  "homepage": "https://github.com/AppliedMathematicsANU/plexus-form",
+  "bugs": {
+    "url": "https://github.com/AppliedMathematicsANU/plexus-form/issues"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Olaf Delgado-Friedrichs",
+    "email": "olaf.delgado@gmail.com"
+  },
+  "main": "./index.js",
+  "dependencies": {
+    "react": "0.9.0",
+
+    "plexus-objective":
+    "git+ssh://git@github.com:AppliedMathematicsANU/plexus-objective.git"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AppliedMathematicsANU/plexus-form.git"
+  }
+}
