@@ -152,6 +152,8 @@ var makeKey = function(path) {
 
 var fieldListFromObject = function(props) {
   var list = [];
+  if (props.schema.description)
+    list.push($.p(null, props.schema.description));
   var key;
   for (key in props.schema.properties) {
     list = list.concat(fieldList({
