@@ -137,6 +137,25 @@ var CheckBox = React.createClass({
 });
 
 
+var Selection = React.createClass({
+  handleChange: function(event) {
+    var val = event.target.value;
+    this.props.update(this.props.path, val, val);
+  },
+  render: function() {
+    var selected = this.props.selected;
+
+    return $.p(commonAttributes(this.props),
+               $.select({ value: this.props.selected,
+                          onChange: this.handleChange },
+                        this.props.options.map(function(opt) {
+                          return $.option({ key: opt, value: opt }, opt);
+                        })),
+               $.label(null, this.props.schema.title));
+  }
+});
+
+
 var ArrayHead = React.createClass({
   render: function() {
     return $.p(commonAttributes(this.props),
@@ -193,6 +212,17 @@ var fieldListFromArray = function(props) {
 
 
 var fieldList = function(props) {
+  if (props.schema['enum']) {
+    return [
+      Selection(ou.merge(props, {
+        key     : makeKey(props.path),
+        options : props.schema['enum'],
+        selected: props.getValue(props.path),
+        errors  : props.getErrors(props.path)
+      }))
+    ];
+  }
+
   switch (props.schema.type) {
   case "boolean":
     return [
