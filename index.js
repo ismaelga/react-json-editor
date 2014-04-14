@@ -302,6 +302,10 @@ var Form = React.createClass({
   handleSubmit: function(event) {
     this.props.onSubmit(this.state.output, event.target.value);
   },
+  handleKeyPress: function(event) {
+    if (event.keyCode == 13 && this.props.enterKeySubmits)
+      this.props.onSubmit(this.state.output, this.props.enterKeySubmits);
+  },
   render: function() {
     var schema = this.props.schema;
     var fields = fieldList({
@@ -319,7 +323,9 @@ var Form = React.createClass({
                          onClick: this.handleSubmit })
       }.bind(this));
 
-    return $.form({ onSubmit: this.preventSubmit },
+    return $.form({ onSubmit: this.preventSubmit,
+                    onKeyPress: this.handleKeyPress
+                  },
                   $.fieldset(null,
                              $.legend(null, schema.title),
                              $.p(null, schema.description),
