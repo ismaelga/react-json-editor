@@ -237,7 +237,7 @@ var fieldListFromArray = function(props) {
 
 
 var fieldList = function(props) {
-  if (props.hints.fileUpload == true) {
+  if ((ou.getIn(props.hints, props.path) || {}).fileUpload == true) {
     return [
       FileField(ou.merge(props, {
         key    : makeKey(props.path),
