@@ -156,6 +156,37 @@ var Selection = React.createClass({
 });
 
 
+var FileField = React.createClass({
+  getInitialState: function() {
+    return {
+      name: null,
+      type: null,
+      data: null
+    }
+  },
+  loadFile: function(event) {
+    var files = event.target.files;
+    var reader = new FileReader();
+
+    reader.onload = function(event) {
+      var val = event.target.result;
+      this.props.update(this.props.path, val, val);
+    }.bind(this);
+
+    if (files[0])
+      reader.readAsText(files[0]);
+  },
+  render: function() {
+    var title = this.props.schema.title;
+    return $.p(commonAttributes(this.props),
+               title ? $.label(null, title) : $.span(),
+               title ? $.br() : $.span(),
+               $.input({ type    : "file",
+                         onChange: this.loadFile }));
+  }
+});
+
+
 var ArrayHead = React.createClass({
   render: function() {
     return $.p(commonAttributes(this.props),
@@ -206,6 +237,15 @@ var fieldListFromArray = function(props) {
 
 
 var fieldList = function(props) {
+  if (props.hints.fileUpload == true) {
+    return [
+      FileField(ou.merge(props, {
+        key    : makeKey(props.path),
+        errors : props.getErrors(props.path)
+      }))
+    ];
+  }
+
   if (props.schema['enum']) {
     return [
       Selection(ou.merge(props, {
@@ -304,6 +344,7 @@ var Form = React.createClass({
     var schema = this.props.schema;
     var fields = fieldList({
       schema   : this.props.schema,
+      hints    : this.props.hints,
       path     : [],
       update   : this.setValue,
       getValue : this.getValue,
