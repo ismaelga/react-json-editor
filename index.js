@@ -176,13 +176,10 @@ var fieldListFromObject = function(props) {
                     props.schema.description));
   var key;
   for (key in props.schema.properties) {
-    list = list.concat(fieldList({
-      schema   : props.schema.properties[key],
-      path     : props.path.concat(key),
-      update   : props.update,
-      getValue : props.getValue,
-      getErrors: props.getErrors
-    }));
+    list = list.concat(fieldList(ou.merge(props, {
+      schema: props.schema.properties[key],
+      path  : props.path.concat(key)
+    })));
   }
   return list;
 };
@@ -199,13 +196,10 @@ var fieldListFromArray = function(props) {
   })));
 
   for (i = 0; i <= values.length; ++i) {
-    list.push(fieldList({
-      schema   : props.schema.items,
-      path     : props.path.concat(i),
-      update   : props.update,
-      getValue : props.getValue,
-      getErrors: props.getErrors
-    }));
+    list.push(fieldList(ou.merge(props, {
+      schema: props.schema.items,
+      path  : props.path.concat(i),
+    })));
   }
   return list;
 };
