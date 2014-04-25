@@ -173,8 +173,12 @@ var FileField = React.createClass({
       this.props.update(this.props.path, val, val);
     }.bind(this);
 
-    if (files[0])
-      reader.readAsText(files[0]);
+    if (files[0]) {
+      if (this.props.mode == 'dataURL')
+        reader.readAsDataURL(files[0]);
+      else
+        reader.readAsText(files[0]);
+    }
   },
   render: function() {
     var title = this.props.schema.title;
@@ -237,10 +241,13 @@ var fieldListFromArray = function(props) {
 
 
 var fieldList = function(props) {
-  if ((ou.getIn(props.hints, props.path) || {}).fileUpload == true) {
+  var hints = ou.getIn(props, ['schema', 'x-hints']) || {};
+
+  if (hints.fileUpload) {
     return [
       FileField(ou.merge(props, {
         key    : makeKey(props.path),
+        mode   : hints.fileUpload.mode,
         errors : props.getErrors(props.path)
       }))
     ];
