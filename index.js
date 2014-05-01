@@ -184,14 +184,14 @@ var FileField = React.createClass({
     var title = this.props.schema.title;
     var value = this.props.value;
 
-    return $.p(commonAttributes(this.props),
-               title ? $.label(null, title) : $.span(),
-               title ? $.br() : $.span(),
-               $.p(null, $.b(null, "Name: "), value.name || '-'),
-               $.p(null, $.b(null, "Size: "), value.size || '-'),
-               $.p(null, $.b(null, "Type: "), value.type || '-'),
-               $.input({ type    : "file",
-                         onChange: this.loadFile }));
+    return $.div(commonAttributes(this.props),
+                 title ? $.label(null, title) : $.span(),
+                 title ? $.br() : $.span(),
+                 $.p(null, $.b(null, "Name: "), value.name || '-'),
+                 $.p(null, $.b(null, "Size: "), value.size || '-'),
+                 $.p(null, $.b(null, "Type: "), value.type || '-'),
+                 $.input({ type    : "file",
+                           onChange: this.loadFile }));
   }
 });
 
