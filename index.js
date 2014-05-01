@@ -157,34 +157,39 @@ var Selection = React.createClass({
 
 
 var FileField = React.createClass({
-  getInitialState: function() {
-    return {
-      name: null,
-      type: null,
-      data: null
-    }
-  },
   loadFile: function(event) {
-    var files = event.target.files;
     var reader = new FileReader();
+    var file = event.target.files[0];
+    var val = {
+      name: file.name,
+      type: file.type,
+      size: file.size
+    };
+
+    this.props.update(this.props.path, val, val);
 
     reader.onload = function(event) {
-      var val = event.target.result;
+      val.data = event.target.result;
       this.props.update(this.props.path, val, val);
     }.bind(this);
 
-    if (files[0]) {
+    if (file) {
       if (this.props.mode == 'dataURL')
-        reader.readAsDataURL(files[0]);
+        reader.readAsDataURL(file);
       else
-        reader.readAsText(files[0]);
+        reader.readAsText(file);
     }
   },
   render: function() {
     var title = this.props.schema.title;
+    var value = this.props.value;
+
     return $.p(commonAttributes(this.props),
                title ? $.label(null, title) : $.span(),
                title ? $.br() : $.span(),
+               $.p(null, $.b(null, "Name: "), value.name || '-'),
+               $.p(null, $.b(null, "Size: "), value.size || '-'),
+               $.p(null, $.b(null, "Type: "), value.type || '-'),
                $.input({ type    : "file",
                          onChange: this.loadFile }));
   }
@@ -247,6 +252,7 @@ var fieldList = function(props) {
     return [
       FileField(ou.merge(props, {
         key    : makeKey(props.path),
+        value  : props.getValue(props.path) || {},
         mode   : hints.fileUpload.mode,
         errors : props.getErrors(props.path)
       }))
