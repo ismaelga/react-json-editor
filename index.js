@@ -37,7 +37,8 @@ var normalizer = {};
 normalizer.string = function(text) {
   return text
     .replace(/\s+/g, ' ')
-    .replace(/^ /, '');
+    .replace(/^ /, '')
+    .replace(/\u00ad/g, '');
 };
 
 normalizer.integer = function(text) {
