@@ -256,7 +256,8 @@ var fieldList = function(props) {
         value  : props.getValue(props.path) || {},
         mode   : hints.fileUpload.mode,
         errors : props.getErrors(props.path)
-      }))
+      })),
+      fieldListFromObject(props)
     ];
   }
 
