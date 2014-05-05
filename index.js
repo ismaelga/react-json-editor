@@ -378,7 +378,6 @@ var Form = React.createClass({
                   },
                   $.fieldset(null,
                              $.legend(null, schema.title),
-                             $.p(null, schema.description),
                              fields),
                   buttons);
   }
