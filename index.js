@@ -385,7 +385,6 @@ var Form = React.createClass({
                   this.props.extraButtons ? buttons() : $.span(),
                   $.fieldset(null,
                              $.legend(null, schema.title),
-                             $.p(null, schema.description),
                              fields),
                   buttons());
   }
