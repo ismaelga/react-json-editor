@@ -365,22 +365,29 @@ var Form = React.createClass({
       getValue : this.getValue,
       getErrors: this.getErrors
     });
-    var buttons =
-      (this.props.buttons || ['Cancel', 'Submit']).map(function(value) {
-        return $.input({ type   : 'submit',
-                         key    : value,
-                         value  : value,
-                         onClick: this.handleSubmit })
-      }.bind(this));
+
+    var submit = this.handleSubmit;
+    var buttonValues = this.props.buttons;
+
+    var buttons = function() {
+      return $.p(null,
+                 (buttonValues || ['Cancel', 'Submit']).map(function(value) {
+                   return $.input({ type   : 'submit',
+                                    key    : value,
+                                    value  : value,
+                                    onClick: submit })
+                 }));
+    };
 
     return $.form({ onSubmit: this.preventSubmit,
                     onKeyPress: this.handleKeyPress
                   },
+                  this.props.extraButtons ? buttons() : $.span(),
                   $.fieldset(null,
                              $.legend(null, schema.title),
                              $.p(null, schema.description),
                              fields),
-                  buttons);
+                  buttons());
   }
 });
 
