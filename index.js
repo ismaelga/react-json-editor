@@ -276,9 +276,9 @@ var fieldList = function(props) {
   case "boolean":
     return [
       CheckBox(ou.merge(props, {
-        key    : makeKey(props.path),
-        checked: props.getValue(props.path) || false,
-        errors : props.getErrors(props.path)
+        key   : makeKey(props.path),
+        value : props.getValue(props.path) || false,
+        errors: props.getErrors(props.path)
       }))
     ];
   case "object" :
