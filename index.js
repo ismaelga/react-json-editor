@@ -266,7 +266,7 @@ var fieldList = function(props) {
       Selection(ou.merge(props, {
         key     : makeKey(props.path),
         options : props.schema['enum'],
-        selected: props.getValue(props.path),
+        selected: props.getValue(props.path) || props.schema['enum'][0],
         errors  : props.getErrors(props.path)
       }))
     ];
