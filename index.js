@@ -230,12 +230,14 @@ var makeFieldsFromArray = function(props) {
     key   : makeKey(props.path),
     errors: props.getErrors(props.path)
   }));
-  var list = (props.getValue(props.path) || []).map(function() {
-    return makeFields(ou.merge(props, {
+  var n = (props.getValue(props.path) || []).length + 1;
+  var list = [];
+  for (var i = 0; i < n; ++i) {
+    list.push(makeFields(ou.merge(props, {
       schema: props.schema.items,
       path  : props.path.concat(i),
-    }));
-  });
+    })));
+  }
 
   return $.div({ key: makeKey(props.path) }, head, list);
 };
