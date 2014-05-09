@@ -186,11 +186,12 @@ var FileField = React.createClass({
     var value = this.props.value;
 
     return $.div(commonAttributes(this.props),
-                 title ? $.label(null, title) : $.span(),
-                 title ? $.br() : $.span(),
-                 $.p(null, $.b(null, "Name: "), value.name || '-'),
-                 $.p(null, $.b(null, "Size: "), value.size || '-'),
-                 $.p(null, $.b(null, "Type: "), value.type || '-'),
+                 $.span({ className: 'form-section-title' },
+                        title ? $.label(null, title) : null),
+                 title ? $.br() : null,
+                 $.p(null, "Name: ", value.name || '-'),
+                 $.p(null, "Size: ", value.size || '-'),
+                 $.p(null, "Type: ", value.type || '-'),
                  $.input({ type    : "file",
                            onChange: this.loadFile }),
                  makeFieldsFromObject(this.props));
@@ -201,7 +202,8 @@ var FileField = React.createClass({
 var ArrayHead = React.createClass({
   render: function() {
     return $.p(commonAttributes(this.props),
-               $.label(null, this.props.schema.title));
+               $.label({ className: 'form-section-title' },
+                       this.props.schema.title));
   }
 });
 
@@ -212,7 +214,8 @@ var makeKey = function(path) {
 
 
 var makeFieldsFromObject = function(props) {
-  var head = $.p({ key: makeKey(props.path) },
+  var head = $.p({ className: 'form-section-title',
+                   key: makeKey(props.path) },
                  props.schema.description);
   var list = Object.keys(props.schema.properties || {}).map(function(key) {
     return makeFields(ou.merge(props, {
@@ -221,7 +224,11 @@ var makeFieldsFromObject = function(props) {
     }));
   });
 
-  return $.div({ key: makeKey(props.path) }, head, list);
+  var extraClass =  props.path.length > 0 ? ' form-subsection' : '';
+
+  return $.div({ className: 'form-section' + extraClass,
+                 key: makeKey(props.path) },
+               head, list);
 };
 
 
@@ -239,7 +246,11 @@ var makeFieldsFromArray = function(props) {
     })));
   }
 
-  return $.div({ key: makeKey(props.path) }, head, list);
+  var extraClass =  props.path.length > 0 ? ' form-subsection' : '';
+
+  return $.div({ className: 'form-section' + extraClass,
+                 key: makeKey(props.path) },
+               head, list);
 };
 
 
