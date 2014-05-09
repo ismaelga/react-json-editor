@@ -192,7 +192,8 @@ var FileField = React.createClass({
                  $.p(null, $.b(null, "Size: "), value.size || '-'),
                  $.p(null, $.b(null, "Type: "), value.type || '-'),
                  $.input({ type    : "file",
-                           onChange: this.loadFile }));
+                           onChange: this.loadFile }),
+                 makeFieldsFromObject(this.props));
   }
 });
 
@@ -210,93 +211,78 @@ var makeKey = function(path) {
 };
 
 
-var fieldListFromObject = function(props) {
-  var list = [];
-  if (props.schema.description)
-    list.push($.p({ key: makeKey(props.path) },
-                    props.schema.description));
-  var key;
-  for (key in props.schema.properties) {
-    list = list.concat(fieldList(ou.merge(props, {
+var makeFieldsFromObject = function(props) {
+  var head = $.p({ key: makeKey(props.path) },
+                 props.schema.description);
+  var list = Object.keys(props.schema.properties || {}).map(function(key) {
+    return makeFields(ou.merge(props, {
       schema: props.schema.properties[key],
       path  : props.path.concat(key)
-    })));
-  }
-  return list;
+    }));
+  });
+
+  return $.div({ key: makeKey(props.path) }, head, list);
 };
 
 
-var fieldListFromArray = function(props) {
-  var list = [];
-  var values = props.getValue(props.path) || [];
-  var i;
-
-  list.push(ArrayHead(ou.merge(props, {
+var makeFieldsFromArray = function(props) {
+  var head = ArrayHead(ou.merge(props, {
     key   : makeKey(props.path),
     errors: props.getErrors(props.path)
-  })));
-
-  for (i = 0; i <= values.length; ++i) {
-    list.push(fieldList(ou.merge(props, {
+  }));
+  var list = (props.getValue(props.path) || []).map(function() {
+    return makeFields(ou.merge(props, {
       schema: props.schema.items,
       path  : props.path.concat(i),
-    })));
-  }
-  return list;
+    }));
+  });
+
+  return $.div({ key: makeKey(props.path) }, head, list);
 };
 
 
-var fieldList = function(props) {
+var makeFields = function(props) {
   var hints = ou.getIn(props, ['schema', 'x-hints']) || {};
 
   if (hints.fileUpload) {
-    return [
-      FileField(ou.merge(props, {
-        key    : makeKey(props.path),
-        value  : props.getValue(props.path) || {},
-        mode   : hints.fileUpload.mode,
-        errors : props.getErrors(props.path)
-      })),
-      fieldListFromObject(props)
-    ];
+    return FileField(ou.merge(props, {
+      key   : makeKey(props.path),
+      value : props.getValue(props.path) || {},
+      mode  : hints.fileUpload.mode,
+      errors: props.getErrors(props.path)
+    }));
   }
 
   if (props.schema['enum']) {
-    return [
-      Selection(ou.merge(props, {
-        key     : makeKey(props.path),
-        options : props.schema['enum'],
-        selected: props.getValue(props.path) || props.schema['enum'][0],
-        errors  : props.getErrors(props.path)
-      }))
-    ];
+    return Selection(ou.merge(props, {
+      key     : makeKey(props.path),
+      options : props.schema['enum'],
+      selected: props.getValue(props.path) || props.schema['enum'][0],
+      errors  : props.getErrors(props.path)
+    }));
   }
 
   switch (props.schema.type) {
   case "boolean":
-    return [
-      CheckBox(ou.merge(props, {
-        key   : makeKey(props.path),
-        value : props.getValue(props.path) || false,
-        errors: props.getErrors(props.path)
-      }))
-    ];
+    return CheckBox(ou.merge(props, {
+      key   : makeKey(props.path),
+      value : props.getValue(props.path) || false,
+      errors: props.getErrors(props.path)
+    }));
   case "object" :
-    return fieldListFromObject(props);
+    return makeFieldsFromObject(props);
   case "array"  :
-    return fieldListFromArray(props);
+    return makeFieldsFromArray(props);
   case "number" :
   case "integer":
   case "string" :
   default:
-    return [
-      InputField(ou.merge(props, {
-        key   : makeKey(props.path),
-        value : props.getValue(props.path) || '',
-        errors: props.getErrors(props.path),
-        type  : props.schema.type
-      }))
-    ];
+    return InputField(ou.merge(props, {
+      key   : makeKey(props.path),
+      value : props.getValue(props.path) || '',
+      errors: props.getErrors(props.path),
+      type  : props.schema.type
+    }));
   }
 };
 
@@ -357,7 +343,7 @@ var Form = React.createClass({
   },
   render: function() {
     var schema = this.props.schema;
-    var fields = fieldList({
+    var fields = makeFields({
       schema   : this.props.schema,
       hints    : this.props.hints,
       path     : [],
