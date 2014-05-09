@@ -19,9 +19,11 @@
   "main": "./index.js",
   "dependencies": {
     "react": "0.9.0",
-
-    "plexus-objective":
-    "git+ssh://git@github.com:AppliedMathematicsANU/plexus-objective.git"
+    "plexus-objective": "~0.0.1"
+  },
+  "devDependencies": {
+    "browserify": "~3.32.0",
+    "plexus-validate": "~0.0.2"
   },
   "repository": {
     "type": "git",
