@@ -7,6 +7,8 @@ var Form     = require('../index');
 
 var $ = React.DOM;
 
+window.React = React;
+
 
 var schema = {
   title: "Example form",
@@ -74,6 +76,8 @@ var schema = {
 
 
 var SchemaEditor = React.createClass({
+  displayName: 'SchemaEditor',
+
   preventSubmit: function(event) {
     event.preventDefault();
   },
@@ -88,6 +92,8 @@ var SchemaEditor = React.createClass({
 
 
 var FormDemoPage = React.createClass({
+  displayName: 'FormDemoPage',
+
   getInitialState: function() {
     return {
       schema: schema,

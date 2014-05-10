@@ -96,6 +96,8 @@ var commonAttributes = function(props) {
 
 
 var InputField = React.createClass({
+  displayName: 'InputField',
+
   normalize: function(text) {
     return normalizer[this.props.type](text);
   },
@@ -124,6 +126,8 @@ var InputField = React.createClass({
 
 
 var CheckBox = React.createClass({
+  displayName: 'CheckBox',
+
   handleChange: function(event) {
     var val = event.target.checked;
     this.props.update(this.props.path, val, val);
@@ -139,6 +143,8 @@ var CheckBox = React.createClass({
 
 
 var Selection = React.createClass({
+  displayName: 'Selection',
+
   handleChange: function(event) {
     var val = event.target.value;
     this.props.update(this.props.path, val, val);
@@ -158,6 +164,8 @@ var Selection = React.createClass({
 
 
 var FileField = React.createClass({
+  displayName: 'FileField',
+
   loadFile: function(event) {
     var reader = new FileReader();
     var file = event.target.files[0];
@@ -200,6 +208,8 @@ var FileField = React.createClass({
 
 
 var ArrayHead = React.createClass({
+  displayName: 'ArrayHead',
+
   render: function() {
     return $.p(commonAttributes(this.props),
                $.label({ className: 'form-section-title' },
@@ -312,6 +322,8 @@ var hashedErrors = function(errors) {
 
 
 var Form = React.createClass({
+  displayName: 'Form',
+
   getInitialState: function() {
     var errors =
       hashedErrors(this.props.validate(this.props.schema, this.props.values));

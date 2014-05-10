@@ -28,7 +28,7 @@ html {
 }
 
 .form-subsection {
-    border: 1px solid gray;
+    background-color: lightgray;
     padding: 0.5em;
     margin: 0.5em 0;
 }
