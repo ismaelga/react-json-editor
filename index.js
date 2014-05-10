@@ -201,8 +201,7 @@ var FileField = React.createClass({
                  $.p(null, "Size: ", value.size || '-'),
                  $.p(null, "Type: ", value.type || '-'),
                  $.input({ type    : "file",
-                           onChange: this.loadFile }),
-                 makeFieldsFromObject(this.props));
+                           onChange: this.loadFile }));
   }
 });
 
