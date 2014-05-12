@@ -59,15 +59,12 @@ var schema = {
     motto: {
       title: "Your motto (file upload)",
       type: "object",
+      "x-hints": {
+        "fileUpload": {
+          "mode": "text"
+        }
+      },
       properties: {
-        content: {
-          type: "object",
-          "x-hints": {
-            "fileUpload": {
-              "mode": "text"
-            }
-          }
-        },
         caption: {
           title: "Caption",
           type: "string"

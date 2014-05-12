@@ -169,11 +169,11 @@ var FileField = React.createClass({
   loadFile: function(event) {
     var reader = new FileReader();
     var file = event.target.files[0];
-    var val = {
+    var val = ou.merge(this.props.getValue(this.props.path), {
       name: file.name,
       type: file.type,
       size: file.size
-    };
+    });
 
     this.props.update(this.props.path, val, val);
 
@@ -190,18 +190,15 @@ var FileField = React.createClass({
     }
   },
   render: function() {
-    var title = this.props.schema.title;
-    var value = this.props.value;
+    var props = this.props;
+    var list = [
+      $.p({ key: "name" }, "Name: ", props.value.name || '-'),
+      $.p({ key: "size" }, "Size: ", props.value.size || '-'),
+      $.p({ key: "type" }, "Type: ", props.value.type || '-'),
+      $.input({ key: "input", type: "file", onChange: this.loadFile })
+    ];
 
-    return $.div(commonAttributes(this.props),
-                 $.span({ className: 'form-section-title' },
-                        title ? $.label(null, title) : null),
-                 title ? $.br() : null,
-                 $.p(null, "Name: ", value.name || '-'),
-                 $.p(null, "Size: ", value.size || '-'),
-                 $.p(null, "Type: ", value.type || '-'),
-                 $.input({ type    : "file",
-                           onChange: this.loadFile }));
+    return makeFieldset(props, list.concat(fieldsForObject(props)));
   }
 });
 
