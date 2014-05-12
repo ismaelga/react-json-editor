@@ -35,3 +35,19 @@ html {
 .form-section-title {
     font-weight: bold;
 }
+
+.form-element label {
+    float: left;
+    clear: left;
+    text-align: right;
+    width: 8em;
+    margin-right: 1em;
+}
+
+.form-element:after {
+    clear: both;
+    content: " ";
+    visibility: hidden;
+    display: block;
+    height: 0;
+}

@@ -87,11 +87,18 @@ var makeTitle = function(description, errors) {
 };
 
 
-var commonAttributes = function(props) {
-    return {
-      className: errorClass(props.errors),
-      title    : makeTitle(props.schema.description, props.errors)
-    };
+var wrappedField = function(props, field) {
+  var extra = ou.getIn(props.schema, ['x-hints', 'form', 'classes']);
+  var title = makeTitle(props.schema.description, props.errors);
+  var classes = [].concat(errorClass(props.errors) || [],
+                          'form-element',
+                          extra || []);
+
+  return $.div({ className: classes.join(' '),
+                 title    : title },
+               $.label({ "htmlFor": props.key },
+                       props.schema.title),
+               field);
 };
 
 
@@ -113,14 +120,14 @@ var InputField = React.createClass({
       event.preventDefault();
   },
   render: function() {
-    var title = this.props.schema.title;
-    return $.p(commonAttributes(this.props),
-               title ? $.label(null, title) : $.span(),
-               title ? $.br() : $.span(),
-               $.input({ type      : "text",
-                         value     : this.props.value,
-                         onKeyPress: this.handleKeyPress,
-                         onChange  : this.handleChange }));
+    var field = $.input({
+      type      : "text",
+      name      : this.props.key,
+      value     : this.props.value,
+      onKeyPress: this.handleKeyPress,
+      onChange  : this.handleChange });
+
+    return wrappedField(this.props, field);
   }
 });
 
@@ -133,11 +140,13 @@ var CheckBox = React.createClass({
     this.props.update(this.props.path, val, val);
   },
   render: function() {
-    return $.p(commonAttributes(this.props),
-               $.input({ type: "checkbox",
-                         checked: this.props.value,
-                         onChange: this.handleChange }),
-               $.label(null, this.props.schema.title));
+    var field = $.input({
+      name: this.props.key,
+      type: "checkbox",
+      checked: this.props.value,
+      onChange: this.handleChange });
+
+    return wrappedField(this.props, field);
   }
 });
 
@@ -150,15 +159,14 @@ var Selection = React.createClass({
     this.props.update(this.props.path, val, val);
   },
   render: function() {
-    var selected = this.props.selected;
+    var field = $.select({ name: this.props.key,
+                           value: this.props.selected,
+                           onChange: this.handleChange },
+                         this.props.options.map(function(opt) {
+                           return $.option({ key: opt, value: opt }, opt);
+                         }));
 
-    return $.p(commonAttributes(this.props),
-               $.select({ value: this.props.selected,
-                          onChange: this.handleChange },
-                        this.props.options.map(function(opt) {
-                          return $.option({ key: opt, value: opt }, opt);
-                        })),
-               $.label(null, this.props.schema.title));
+    return wrappedField(this.props, field);
   }
 });
 
@@ -192,9 +200,10 @@ var FileField = React.createClass({
   render: function() {
     var props = this.props;
     var list = [
-      $.p({ key: "name" }, "Name: ", props.value.name || '-'),
-      $.p({ key: "size" }, "Size: ", props.value.size || '-'),
-      $.p({ key: "type" }, "Type: ", props.value.type || '-'),
+      $.dl({ key: "fileProperties" },
+           $.dt(null, "Name"), $.dd(null, props.value.name || '-'),
+           $.dt(null, "Size"), $.dd(null, props.value.size || '-'),
+           $.dt(null, "Type"), $.dd(null, props.value.type || '-')),
       $.input({ key: "input", type: "file", onChange: this.loadFile })
     ];
 
@@ -233,6 +242,7 @@ var fieldsForArray = function(props) {
 
 
 var makeFieldset = function(props, fields) {
+  var extra = ou.getIn(props.schema, ['x-hints', 'form', 'classes']);
   var errors = props.getErrors(props.path);
   var title = makeTitle(props.schema.description, errors);
   var headProps = ou.merge(props, {
@@ -242,7 +252,8 @@ var makeFieldset = function(props, fields) {
 
   var classes = [].concat('form-section',
                           (props.path.length > 0 ? 'form-subsection' : []),
-                          errorClass(props.getErrors(props.path)) || []);
+                          errorClass(props.getErrors(props.path)) || [],
+                          extra || []);
 
   return $.fieldset({ className: classes.join(' '),
                       key: makeKey(props.path) },

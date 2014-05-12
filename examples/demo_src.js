@@ -20,9 +20,14 @@ var schema = {
       title: "Your name",
       description: "Your full name",
       type: "string",
-        minLength: 3,
-        maxLength: 40,
-        pattern: "^[A-Z][a-z]*(\\s[A-Z][a-z]*)*$"
+      minLength: 3,
+      maxLength: 40,
+      pattern: "^[A-Z][a-z]*(\\s[A-Z][a-z]*)*$",
+      'x-hints': {
+        form: {
+          classes: 'important-field'
+        }
+      }
     },
     age: {
       title: "Your age",
@@ -62,6 +67,9 @@ var schema = {
       "x-hints": {
         "fileUpload": {
           "mode": "text"
+        },
+        "form": {
+          classes: "important-file"
         }
       },
       properties: {
