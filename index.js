@@ -244,16 +244,18 @@ var fieldsForArray = function(props) {
 var makeFieldset = function(props, fields) {
   var extra = ou.getIn(props.schema, ['x-hints', 'form', 'classes']);
   var errors = props.getErrors(props.path);
+  var legendClasses = [].concat('form-section-title',
+                                errorClass(errors) || []);
   var title = makeTitle(props.schema.description, errors);
   var headProps = ou.merge(props, {
-    className: 'form-section-title',
+    className: legendClasses.join(' '),
     title    : title
   });
 
   var classes = [].concat('form-section',
                           (props.path.length > 0 ? 'form-subsection' : []),
-                          errorClass(props.getErrors(props.path)) || [],
                           extra || []);
+
 
   return $.fieldset({ className: classes.join(' '),
                       key: makeKey(props.path) },
