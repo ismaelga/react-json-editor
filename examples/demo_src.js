@@ -57,7 +57,7 @@ var schema = {
       }
     },
     motto: {
-      description: "Your motto (file upload)",
+      title: "Your motto (file upload)",
       type: "object",
       properties: {
         content: {

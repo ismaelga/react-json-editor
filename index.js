@@ -206,46 +206,22 @@ var FileField = React.createClass({
 });
 
 
-var ArrayHead = React.createClass({
-  displayName: 'ArrayHead',
-
-  render: function() {
-    return $.p(commonAttributes(this.props),
-               $.label({ className: 'form-section-title' },
-                       this.props.schema.title));
-  }
-});
-
-
 var makeKey = function(path) {
   return path.join('_');
 };
 
 
-var makeFieldsFromObject = function(props) {
-  var head = $.p({ className: 'form-section-title',
-                   key: makeKey(props.path) },
-                 props.schema.description);
-  var list = Object.keys(props.schema.properties || {}).map(function(key) {
+var fieldsForObject = function(props) {
+  return Object.keys(props.schema.properties || {}).map(function(key) {
     return makeFields(ou.merge(props, {
       schema: props.schema.properties[key],
       path  : props.path.concat(key)
     }));
   });
-
-  var extraClass =  props.path.length > 0 ? ' form-subsection' : '';
-
-  return $.div({ className: 'form-section' + extraClass,
-                 key: makeKey(props.path) },
-               head, list);
 };
 
 
-var makeFieldsFromArray = function(props) {
-  var head = ArrayHead(ou.merge(props, {
-    key   : makeKey(props.path),
-    errors: props.getErrors(props.path)
-  }));
+var fieldsForArray = function(props) {
   var n = (props.getValue(props.path) || []).length + 1;
   var list = [];
   for (var i = 0; i < n; ++i) {
@@ -255,11 +231,26 @@ var makeFieldsFromArray = function(props) {
     })));
   }
 
-  var extraClass =  props.path.length > 0 ? ' form-subsection' : '';
+  return list;
+};
 
-  return $.div({ className: 'form-section' + extraClass,
-                 key: makeKey(props.path) },
-               head, list);
+
+var makeFieldset = function(props, fields) {
+  var errors = props.getErrors(props.path);
+  var title = makeTitle(props.schema.description, errors);
+  var headProps = ou.merge(props, {
+    className: 'form-section-title',
+    title    : title
+  });
+
+  var classes = [].concat('form-section',
+                          (props.path.length > 0 ? 'form-subsection' : []),
+                          errorClass(props.getErrors(props.path)) || []);
+
+  return $.fieldset({ className: classes.join(' '),
+                      key: makeKey(props.path) },
+                    $.legend(headProps, props.schema.title),
+                    fields);
 };
 
 
@@ -292,9 +283,9 @@ var makeFields = function(props) {
       errors: props.getErrors(props.path)
     }));
   case "object" :
-    return makeFieldsFromObject(props);
+    return makeFieldset(props, fieldsForObject(props));
   case "array"  :
-    return makeFieldsFromArray(props);
+    return makeFieldset(props, fieldsForArray(props));
   case "number" :
   case "integer":
   case "string" :
@@ -393,9 +384,7 @@ var Form = React.createClass({
                     onKeyPress: this.handleKeyPress
                   },
                   this.props.extraButtons ? buttons() : $.span(),
-                  $.fieldset(null,
-                             $.legend(null, schema.title),
-                             fields),
+                  fields,
                   buttons());
   }
 });
