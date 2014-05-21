@@ -1,6 +1,6 @@
 {
   "name": "plexus-form",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "A dynamic form component for react using JSON-Schema.",
   "keywords": [
     "JSON-Schema",
