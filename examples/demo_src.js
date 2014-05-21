@@ -14,7 +14,7 @@ var schema = {
   title: "Example form",
   description: "A form based on a schema",
   type: "object",
-  required: ["name", "gender"],
+  required: ["name", "age"],
   properties: {
     name: {
       title: "Your name",
@@ -40,9 +40,40 @@ var schema = {
       minimum: 0,
       exclusiveMinimum: true
     },
-    gender: {
-      title: "Do you have a gender?",
-      type: "boolean"
+    color: {
+      title: "Favourite colour",
+      type: "object",
+      oneOf: [
+        {
+        },
+        {
+          properties: {
+            hasFave: {
+              type: "string",
+              enum: [ "no" ]
+            }
+          }
+        },
+        {
+          properties: {
+            hasFave: {
+              type: "string",
+              enum: [ "yes" ]
+            },
+            fave: {
+              title: "Your favourite colour is",
+              type: "string",
+              enum: [
+                "", "red", "green", "blue", "yellow", "orange", "purple", "other"
+              ]
+            }
+          }
+        }
+      ],
+      "x-selector": {
+        title: "Do you have a favourite colour?",
+        property: "hasFave",
+      }
     },
     interests: {
       title: "Your interests",
