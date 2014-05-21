@@ -242,37 +242,25 @@ var fieldsForArray = function(props) {
 
 
 var fieldsForAlternative = function(props) {
-  var selector, options, spath, selected, schema;
+  var selector, options, selected, schema;
 
-  selector = props.schema['x-selector'];
+  selector = ou.getIn(props.schema, ['x-hints', 'form', 'selector']);
   if (!selector)
     return;
 
-  spath = props.path.concat(selector.property);
-
   options = props.schema.oneOf.map(function(alt) {
-    return ou.getIn(alt, [ 'properties', selector.property, 'enum', 0 ]) || "";
+    return ou.getIn(alt, [ 'properties', selector, 'enum', 0 ]) || "";
   });
 
-  selected = props.getValue(spath) || options[0];
+  selected = props.getValue(props.path.concat(selector)) || options[0];
 
-  schema = ou.merge(props.schema.oneOf[options.indexOf(selected)]);
-  schema.properties = ou.merge(schema.properties);
-  if (schema.properties)
-    delete schema.properties[selector.property];
+  schema = ou.setIn(props.schema.oneOf[options.indexOf(selected)],
+                    [ 'properties', selector ],
+                    ou.merge(ou.getIn(props.schema,
+                                      [ 'properties', selector]),
+                             { enum: options }));
 
-  return [
-    Selection(ou.merge(props, {
-      key     : makeKey(spath),
-      schema  : ou.merge(props.schema, { title: selector.title }),
-      path    : spath,
-      options : options,
-      selected: selected,
-      errors  : props.getErrors(spath)
-    }))
-  ].concat(schema
-           ? fieldsForObject(ou.merge(props, { schema: schema }))
-           : []);
+  return fieldsForObject(ou.merge(props, { schema: schema }));
 };
 
 

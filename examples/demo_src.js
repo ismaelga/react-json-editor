@@ -43,13 +43,18 @@ var schema = {
     color: {
       title: "Favourite colour",
       type: "object",
+      properties: {
+        hasFave: {
+          title: "Do you have a favourite colour?",
+          type: "string"
+        }
+      },
       oneOf: [
         {
         },
         {
           properties: {
             hasFave: {
-              type: "string",
               enum: [ "no" ]
             }
           }
@@ -57,7 +62,6 @@ var schema = {
         {
           properties: {
             hasFave: {
-              type: "string",
               enum: [ "yes" ]
             },
             fave: {
@@ -70,9 +74,10 @@ var schema = {
           }
         }
       ],
-      "x-selector": {
-        title: "Do you have a favourite colour?",
-        property: "hasFave",
+      "x-hints": {
+        form: {
+          selector: "hasFave",
+        }
       }
     },
     interests: {
