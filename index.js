@@ -241,24 +241,29 @@ var fieldsForArray = function(props) {
 };
 
 
-var fieldsForAlternative = function(props) {
-  var selector, options, selected, schema;
+var schemaForAlternative = function(value, schema) {
+  var selector, options, selected;
 
-  selector = ou.getIn(props.schema, ['x-hints', 'form', 'selector']);
+  selector = ou.getIn(schema, ['x-hints', 'form', 'selector']);
   if (!selector)
     return;
 
-  options = props.schema.oneOf.map(function(alt) {
+  options = schema.oneOf.map(function(alt) {
     return ou.getIn(alt, [ 'properties', selector, 'enum', 0 ]) || "";
   });
 
-  selected = props.getValue(props.path.concat(selector)) || options[0];
+  selected = (value || {})[selector] || options[0];
 
-  schema = ou.setIn(props.schema.oneOf[options.indexOf(selected)],
-                    [ 'properties', selector ],
-                    ou.merge(ou.getIn(props.schema,
-                                      [ 'properties', selector]),
-                             { enum: options }));
+  return ou.merge(ou.setIn(schema.oneOf[options.indexOf(selected)],
+                           [ 'properties', selector ],
+                           ou.merge(ou.getIn(schema, [ 'properties', selector]),
+                                    { enum: options })),
+                  { type: 'object' });
+};
+
+
+var fieldsForAlternative = function(props) {
+  var schema = schemaForAlternative(props.getValue(props.path), props.schema);
 
   return fieldsForObject(ou.merge(props, { schema: schema }));
 };
@@ -336,6 +341,31 @@ var makeFields = function(props) {
 };
 
 
+var withDefaultOptions = function(data, schema) {
+  var result;
+  var key;
+
+  if (schema['enum']) {
+    result = data || schema['enum'][0];
+  } else if (schema.oneOf) {
+    result = withDefaultOptions(data, schemaForAlternative(data, schema));
+  } else if (schema.type == 'object') {
+    result = {};
+    for (key in schema.properties)
+      result[key] = withDefaultOptions((data || {})[key],
+                                       schema.properties[key]);
+  } else if (schema.type == 'array') {
+    result = [];
+    for (key = 0; key < (data || []).length; ++key)
+      result[key] = withDefaultOptions((data || [])[key],
+                                       schema.items);
+  } else {
+    result = data;
+  }
+  return result;
+};
+
+
 var hashedErrors = function(errors) {
   var result = {};
   var i, entry;
@@ -344,6 +374,11 @@ var hashedErrors = function(errors) {
     result[makeKey(entry.path)] = entry.errors;
   }
   return result;
+};
+
+
+var normalise = function(data, schema) {
+  return ou.prune(withDefaultOptions(data, schema));
 };
 
 
@@ -367,9 +402,10 @@ var Form = React.createClass({
     });
   },
   setValue: function(path, raw, parsed) {
-    var values = ou.prune(ou.setIn(this.state.values, path, raw));
-    var output = ou.prune(ou.setIn(this.state.output, path, parsed));
-    var errors = hashedErrors(this.props.validate(this.props.schema, output));
+    var schema = this.props.schema;
+    var values = normalise(ou.setIn(this.state.values, path, raw), schema);
+    var output = normalise(ou.setIn(this.state.output, path, parsed), schema);
+    var errors = hashedErrors(this.props.validate(schema, output));
     this.setState({
       values: values,
       output: output,
