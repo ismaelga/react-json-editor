@@ -2,14 +2,9 @@
 
 var gulp = require('gulp');
 var browserify = require('gulp-browserify');
-var deploy = require('gulp-gh-pages');
 
 
 gulp.task('default', ['compile']);
-
-gulp.task('deploy', ['compile'], function () {
-    gulp.src(['dist/**/*']).pipe(deploy());
-});
 
 gulp.task('compile', ['css', 'html', 'scripts']);
 

@@ -10,7 +10,7 @@ Make sure you have NPM and Gulp installed. Gulp is needed to build the example.
 2. `gulp`
 3. Examine `dist`
 
-In order to deploy the example to `gh-pages`, execute `gulp deploy`. Before that you need to set up the branch using `git subtree push --prefix dist origin gh-pages`.
+In order to deploy dist to `gh-pages`, [consider using a subtree](https://gist.github.com/cobyism/4730490).
 
 # License
 
