@@ -64,11 +64,11 @@ parser.string = function(text) {
 };
 
 parser.integer = function(text) {
-  return parseInt(normalizer.integer(text));
+  return text ? parseInt(normalizer.integer(text)) : null;
 };
 
 parser.number = function(text) {
-  return parseFloat(normalizer.number(text));
+  return text ? parseFloat(normalizer.number(text)) : null;
 };
 
 
