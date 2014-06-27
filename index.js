@@ -406,11 +406,15 @@ var Form = React.createClass({
     var values = normalise(ou.setIn(this.state.values, path, raw), schema);
     var output = normalise(ou.setIn(this.state.output, path, parsed), schema);
     var errors = hashedErrors(this.props.validate(schema, output));
-    this.setState({
-      values: values,
-      output: output,
-      errors: errors
-    });
+
+    if (this.props.submitOnChange)
+      this.props.onSubmit(output, null, errors);
+    else
+      this.setState({
+        values: values,
+        output: output,
+        errors: errors
+      });
   },
   getValue: function(path) {
     return ou.getIn(this.state.values, path);
