@@ -1,6 +1,8 @@
 # plexus-form
 
-A dynamic form component for react using JSON-Schema.
+A dynamic form component for react using a specification format based on JSON-Schema.
+
+For an example, see [http://appliedmathematicsanu.github.io/plexus-form/](http://appliedmathematicsanu.github.io/plexus-form/).
 
 # Development
 
