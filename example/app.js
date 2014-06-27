@@ -154,8 +154,8 @@ var FormDemoPage = React.createClass({
       this.setState({ text: text });
     }
   },
-  onFormSubmit: function(data, value) {
-    this.setState({ button: value, data: data });
+  onFormSubmit: function(data, value, errors) {
+    this.setState({ button: value, data: data, errors: errors });
   },
   render: function() {
     return $.div(null,
@@ -177,7 +177,10 @@ var FormDemoPage = React.createClass({
                            $.pre(null,
                                  JSON.stringify(this.state.data, null, 4)),
                            $.h3(null, "Button:"),
-                           $.p(null, this.state.button))
+                           $.p(null, this.state.button),
+                           $.h3(null, "Errors:"),
+                           $.pre(null,
+                                 JSON.stringify(this.state.errors, null, 4)))
                      )
                 );
   }

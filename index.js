@@ -422,7 +422,9 @@ var Form = React.createClass({
     event.preventDefault();
   },
   handleSubmit: function(event) {
-    this.props.onSubmit(this.state.output, event.target.value);
+    this.props.onSubmit(this.state.output,
+                        event.target.value,
+                        this.state.errors);
   },
   handleKeyPress: function(event) {
     if (event.keyCode == 13 && this.props.enterKeySubmits)
