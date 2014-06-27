@@ -126,11 +126,11 @@ var SchemaEditor = React.createClass({
     event.preventDefault();
   },
   render: function() {
-    return $.form({ onSubmit: this.preventSubmit },
-                  $.textarea({ rows    : 30,
-                               cols    : 60,
-                               onChange: this.props.onChange,
-                               value   : this.props.value }));
+    return (
+      <form onSubmit={this.preventSubmit}>
+        <textarea rows="30" cols="60" onChange={this.props.onChange} value={this.props.value}></textarea>
+      </form>
+    );
   }
 });
 
@@ -158,31 +158,34 @@ var FormDemoPage = React.createClass({
     this.setState({ button: value, data: data, errors: errors });
   },
   render: function() {
-    return $.div(null,
-                 $.ul({ className: 'flexContainer' },
-                      $.li({ className: 'flexItem' },
-                           $.h3(null, "Schema:"),
-                           SchemaEditor({ value   : this.state.text,
-                                          onChange: this.update })),
-                      $.li({ className: 'flexItem' },
-                           $.h3(null, "Generated form:"),
-                           Form({
-                             buttons: ['Dismissed', 'Energise'],
-                             onSubmit: this.onFormSubmit,
-                             schema: this.state.schema,
-                             validate: validate
-                           })),
-                      $.li({ className: 'flexItem' },
-                           $.h3(null, "Data:"),
-                           $.pre(null,
-                                 JSON.stringify(this.state.data, null, 4)),
-                           $.h3(null, "Button:"),
-                           $.p(null, this.state.button),
-                           $.h3(null, "Errors:"),
-                           $.pre(null,
-                                 JSON.stringify(this.state.errors, null, 4)))
-                     )
-                );
+    return (
+      <div>
+        <ul className="flexContainer">
+          <li className="flexItem">
+            <h3>Schema:</h3>
+            <SchemaEditor value={this.state.text} onChange={this.update} />
+          </li>
+          <li className="flexItem">
+            <h3>Generated form:</h3>
+            <Form buttons={['Dismissed', 'Energise']}
+              onSubmit={this.onFormSubmit}
+              schema={this.state.schema}
+              validate={validate}
+            />
+          </li>
+          <li className="flexItem">
+            <h3>Data:</h3>
+            <pre>{JSON.stringify(this.state.data, null, 4)}</pre>
+
+            <h3>Button:</h3>
+            <p>{this.state.button}</p>
+
+            <h3>Errors:</h3>
+            <pre>{JSON.stringify(this.state.errors, null, 4)}</pre>
+          </li>
+        </ul>
+      </div>
+    );
   }
 });
 
