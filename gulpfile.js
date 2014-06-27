@@ -36,7 +36,7 @@ gulp.task('scripts', function() {
         stream = stream.pipe(source('app.js'));
 
         return stream.pipe(gulp.dest('dist/src'));
-    }
+    };
 
     bundler.on('update', rebundle);
 
