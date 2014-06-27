@@ -60,7 +60,7 @@ normalizer.number = function(text) {
 var parser = {};
 
 parser.string = function(text) {
-  return normalizer.string(text).trim();
+  return normalizer.string(text);
 };
 
 parser.integer = function(text) {
