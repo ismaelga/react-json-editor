@@ -1,11 +1,18 @@
-plexus-form
-===========
+# plexus-form
 
 A dynamic form component for react using JSON-Schema.
 
+# Development
 
-License
--------
+Make sure you have NPM and Gulp installed. Gulp is needed to build the example.
+
+1. `npm install`
+2. `gulp`
+3. Examine `dist`
+
+In order to deploy dist to `gh-pages`, [consider using a subtree](https://gist.github.com/cobyism/4730490).
+
+# License
 
 The MIT License (MIT)
 

@@ -1,0 +1,53 @@
+*, *:before, *:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+    font-size: 13px;
+    font-family: arial, sans-serif;
+}
+
+.flexContainer {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.flexItem {
+  margin-right: 20px;
+}
+
+.error, .error * {
+    color: red;
+}
+
+.form-subsection {
+    padding: 0.5em;
+    margin: 0.5em 0;
+}
+
+.form-section-title {
+    font-weight: bold;
+}
+
+.form-element label {
+    float: left;
+    clear: left;
+    text-align: right;
+    width: 8em;
+    margin-right: 1em;
+}
+
+.form-element:after {
+    clear: both;
+    content: " ";
+    visibility: hidden;
+    display: block;
+    height: 0;
+}
