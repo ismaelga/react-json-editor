@@ -5,8 +5,6 @@ var React = require('react');
 var validate = require('plexus-validate');
 var Form     = require('../index');
 
-var $ = React.DOM;
-
 window.React = React;
 
 
