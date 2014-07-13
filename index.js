@@ -72,36 +72,6 @@ parser.number = function(text) {
 };
 
 
-var errorClass = function(errors) {
-  return (errors == null || errors.length == 0) ? '' : 'error';
-};
-
-
-var makeTitle = function(description, errors) {
-  var parts = [];
-  if (description != null && description.length > 0)
-    parts.push(description);
-  if (errors != null && errors.length > 0)
-    parts.push(errors.join('\n'));
-  return parts.join('\n\n');
-};
-
-
-var wrappedField = function(props, field) {
-  var extra = ou.getIn(props.schema, ['x-hints', 'form', 'classes']);
-  var title = makeTitle(props.schema.description, props.errors);
-  var classes = [].concat(errorClass(props.errors) || [],
-                          'form-element',
-                          extra || []);
-
-  return $.div({ className: classes.join(' '),
-                 title    : title },
-               $.label({ "htmlFor": props.key },
-                       props.schema.title),
-               field);
-};
-
-
 var InputField = React.createClass({
   displayName: 'InputField',
 
@@ -120,14 +90,12 @@ var InputField = React.createClass({
       event.preventDefault();
   },
   render: function() {
-    var field = $.input({
+    return $.input({
       type      : "text",
       name      : this.props.key,
-      value     : this.props.value,
+      value     : this.props.value || '',
       onKeyPress: this.handleKeyPress,
       onChange  : this.handleChange });
-
-    return wrappedField(this.props, field);
   }
 });
 
@@ -140,13 +108,11 @@ var CheckBox = React.createClass({
     this.props.update(this.props.path, val, val);
   },
   render: function() {
-    var field = $.input({
+    return $.input({
       name: this.props.key,
       type: "checkbox",
-      checked: this.props.value,
+      checked: this.props.value || false,
       onChange: this.handleChange });
-
-    return wrappedField(this.props, field);
   }
 });
 
@@ -159,14 +125,15 @@ var Selection = React.createClass({
     this.props.update(this.props.path, val, val);
   },
   render: function() {
-    var field = $.select({ name: this.props.key,
-                           value: this.props.selected,
-                           onChange: this.handleChange },
-                         this.props.options.map(function(opt) {
-                           return $.option({ key: opt, value: opt }, opt);
-                         }));
-
-    return wrappedField(this.props, field);
+    return $.select(
+      {
+        name    : this.props.key,
+        value   : this.props.value || this.props.options[0],
+        onChange: this.handleChange
+      },
+      this.props.options.map(function(opt) {
+        return $.option({ key: opt, value: opt }, opt);
+      }));
   }
 });
 
@@ -198,22 +165,52 @@ var FileField = React.createClass({
     }
   },
   render: function() {
-    var props = this.props;
+    var value = this.props.value || {};
     var list = [
       $.dl({ key: "fileProperties" },
-           $.dt(null, "Name"), $.dd(null, props.value.name || '-'),
-           $.dt(null, "Size"), $.dd(null, props.value.size || '-'),
-           $.dt(null, "Type"), $.dd(null, props.value.type || '-')),
+           $.dt(null, "Name"), $.dd(null, value.name || '-'),
+           $.dt(null, "Size"), $.dd(null, value.size || '-'),
+           $.dt(null, "Type"), $.dd(null, value.type || '-')),
       $.input({ key: "input", type: "file", onChange: this.loadFile })
     ];
 
-    return makeFieldset(props, list.concat(fieldsForObject(props)));
+    return makeFieldset(this.props, list.concat(fieldsForObject(this.props)));
   }
 });
 
 
 var makeKey = function(path) {
   return path.join('_');
+};
+
+
+var errorClass = function(errors) {
+  return (errors == null || errors.length == 0) ? '' : 'error';
+};
+
+
+var makeTitle = function(description, errors) {
+  var parts = [];
+  if (description != null && description.length > 0)
+    parts.push(description);
+  if (errors != null && errors.length > 0)
+    parts.push(errors.join('\n'));
+  return parts.join('\n\n');
+};
+
+
+var wrappedField = function(props, field) {
+  var extra = ou.getIn(props.schema, ['x-hints', 'form', 'classes']);
+  var title = makeTitle(props.schema.description, props.errors);
+  var classes = [].concat(errorClass(props.errors) || [],
+                          'form-element',
+                          extra || []);
+
+  return $.div({ className: classes.join(' '),
+                 title    : title },
+               $.label({ "htmlFor": props.key },
+                       props.schema.title),
+               field);
 };
 
 
@@ -271,10 +268,9 @@ var fieldsForAlternative = function(props) {
 
 var makeFieldset = function(props, fields) {
   var extra = ou.getIn(props.schema, ['x-hints', 'form', 'classes']);
-  var errors = props.getErrors(props.path);
   var legendClasses = [].concat('form-section-title',
-                                errorClass(errors) || []);
-  var title = makeTitle(props.schema.description, errors);
+                                errorClass(props.errors) || []);
+  var title = makeTitle(props.schema.description, props.errors);
   var headProps = ou.merge(props, {
     className: legendClasses.join(' '),
     title    : title
@@ -284,9 +280,8 @@ var makeFieldset = function(props, fields) {
                           (props.path.length > 0 ? 'form-subsection' : []),
                           extra || []);
 
-
   return $.fieldset({ className: classes.join(' '),
-                      key: makeKey(props.path) },
+                      key: props.key },
                     $.legend(headProps, props.schema.title),
                     fields);
 };
@@ -295,34 +290,25 @@ var makeFieldset = function(props, fields) {
 var makeFields = function(props) {
   var hints = ou.getIn(props, ['schema', 'x-hints']) || {};
 
-  if (hints.fileUpload) {
-    return FileField(ou.merge(props, {
-      key   : makeKey(props.path),
-      value : props.getValue(props.path) || {},
-      mode  : hints.fileUpload.mode,
-      errors: props.getErrors(props.path)
-    }));
-  }
+  props = ou.merge(props, {
+    key   : makeKey(props.path),
+    value : props.getValue(props.path),
+    errors: props.getErrors(props.path),
+    type  : props.schema.type
+  });
 
-  if (props.schema['oneOf'])
+  if (hints.fileUpload)
+    return FileField(ou.merge(props, { mode  : hints.fileUpload.mode }));
+  else if (props.schema['oneOf'])
     return makeFieldset(props, fieldsForAlternative(props));
-
-  if (props.schema['enum']) {
-    return Selection(ou.merge(props, {
-      key     : makeKey(props.path),
-      options : props.schema['enum'],
-      selected: props.getValue(props.path) || props.schema['enum'][0],
-      errors  : props.getErrors(props.path)
-    }));
+  else if (props.schema['enum']) {
+    props = ou.merge(props, { options: props.schema['enum'] });
+    return wrappedField(props, Selection(props));
   }
 
   switch (props.schema.type) {
   case "boolean":
-    return CheckBox(ou.merge(props, {
-      key   : makeKey(props.path),
-      value : props.getValue(props.path) || false,
-      errors: props.getErrors(props.path)
-    }));
+    return wrappedField(props, CheckBox(props));
   case "object" :
     return makeFieldset(props, fieldsForObject(props));
   case "array"  :
@@ -331,12 +317,7 @@ var makeFields = function(props) {
   case "integer":
   case "string" :
   default:
-    return InputField(ou.merge(props, {
-      key   : makeKey(props.path),
-      value : props.getValue(props.path) || '',
-      errors: props.getErrors(props.path),
-      type  : props.schema.type
-    }));
+    return wrappedField(props, InputField(props));
   }
 };
 
