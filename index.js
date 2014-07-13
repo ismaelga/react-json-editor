@@ -207,6 +207,7 @@ var wrappedField = function(props, field) {
                           extra || []);
 
   return $.div({ className: classes.join(' '),
+                 key      : props.key,
                  title    : title },
                $.label({ "htmlFor": props.key },
                        props.schema.title),
@@ -298,7 +299,7 @@ var makeFields = function(props) {
   });
 
   if (hints.fileUpload)
-    return FileField(ou.merge(props, { mode  : hints.fileUpload.mode }));
+    return FileField(ou.merge(props, { mode: hints.fileUpload.mode }));
   else if (props.schema['oneOf'])
     return makeFieldset(props, fieldsForAlternative(props));
   else if (props.schema['enum']) {
