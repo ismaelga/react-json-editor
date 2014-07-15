@@ -332,7 +332,7 @@ var withDefaultOptions = function(data, schema) {
   } else if (schema.oneOf) {
     result = withDefaultOptions(data, schemaForAlternative(data, schema));
   } else if (schema.type == 'object') {
-    result = {};
+    result = ou.merge(data);
     for (key in schema.properties)
       result[key] = withDefaultOptions((data || {})[key],
                                        schema.properties[key]);
