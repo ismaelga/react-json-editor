@@ -63,7 +63,7 @@ var schema = {
               enum: [ "yes" ]
             },
             fave: {
-              title: "Your favourite colour is",
+              title: "Your favourite colour",
               type: "string",
               enum: [
                 "", "red", "green", "blue", "yellow", "orange", "purple", "other"
@@ -133,6 +133,30 @@ var SchemaEditor = React.createClass({
 });
 
 
+var renderField = function(field, props) {
+  var errors  = (props.errors || []).join('\n');
+  var classes = [].concat(errors ? 'error' : [],
+                          'form-element',
+                          props.classes || []);
+  var errorClasses = 'form-error' + (errors ? '' : ' invisible');
+
+  return (
+      <div className={classes.join(' ')} key={props.key}>
+        <label htmlFor={props.key}>
+          {props.title}
+        </label>
+        <span className='form-help' title={props.description}>
+          ?
+        </span>
+        {field}
+        <span className={errorClasses} title={errors}>
+          !
+        </span>
+      </div>
+  );
+};
+
+
 var FormDemoPage = React.createClass({
   displayName: 'FormDemoPage',
 
@@ -169,6 +193,7 @@ var FormDemoPage = React.createClass({
               onSubmit={this.onFormSubmit}
               schema={this.state.schema}
               validate={validate}
+              renderField={renderField}
             />
           </li>
           <li className="flexItem">
