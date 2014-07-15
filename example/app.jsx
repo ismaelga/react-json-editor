@@ -138,6 +138,7 @@ var renderField = function(field, props) {
   var classes = [].concat(errors ? 'error' : [],
                           'form-element',
                           props.classes || []);
+  var helpClasses  = 'form-help' + (props.description ? '' : ' invisible');
   var errorClasses = 'form-error' + (errors ? '' : ' invisible');
 
   return (
@@ -145,7 +146,7 @@ var renderField = function(field, props) {
         <label htmlFor={props.key}>
           {props.title}
         </label>
-        <span className='form-help' title={props.description}>
+        <span className={helpClasses} title={props.description}>
           ?
         </span>
         {field}
