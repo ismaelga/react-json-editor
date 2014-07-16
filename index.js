@@ -174,14 +174,9 @@ var FileField = React.createClass({
            $.dt(null, "Type"), $.dd(null, value.type || '-'))
     ];
 
-    return makeFieldset(this.props, list.concat(fieldsForObject(this.props)));
+    return wrappedSection(this.props, list.concat(fieldsForObject(this.props)));
   }
 });
-
-
-var makeKey = function(path) {
-  return path.join('_');
-};
 
 
 var errorClass = function(errors) {
@@ -204,31 +199,71 @@ var FieldWrapper = React.createClass({
     var classes = [].concat(errorClass(this.props.errors) || [],
                             'form-element',
                             this.props.classes || []);
-    var title = makeTitle(this.props.description, this.props.errors);
 
-    return $.div({ className: classes.join(' '),
-                   key      : this.props.key,
-                   title    : title
-                 },
-                 $.label({ htmlFor: this.props.key }, this.props.title),
-                 this.props.children);
+    return $.div(
+      {
+        className: classes.join(' '),
+        key      : this.props.key,
+        title    : makeTitle(this.props.description, this.props.errors)
+      },
+      $.label(
+        {
+          htmlFor: this.props.key
+        },
+        this.props.title),
+      this.props.children);
   }
 });
 
 
+var SectionWrapper = React.createClass({
+  render: function() {
+    var level = this.props.path.length;
+    var classes = [].concat('form-section',
+                            (level > 0 ? 'form-subsection' : []),
+                            this.props.classes || []);
+    var legendClasses = [].concat(errorClass(this.props.errors) || [],
+                                  'form-section-title');
+
+    return $.fieldset(
+      {
+        className: classes.join(' '),
+        key      : this.props.key
+      },
+      $.legend(
+        {
+          className: legendClasses.join(' '),
+          title    : makeTitle(this.props.description, this.props.errors)
+        },
+        this.props.title),
+      this.props.children);
+  }
+});
+
+
+var propsForWrapper = function(props) { 
+  return {
+    key        : props.key,
+    path       : props.path,
+    errors     : props.errors,
+    classes    : ou.getIn(props.schema, ['x-hints', 'form', 'classes']),
+    title      : props.schema.title,
+    description: props.schema.description
+  };
+}
+
+
 var wrappedField = function(props, field) {
   return (props.fieldWrapper || FieldWrapper)(
-    {
-      key        : props.key,
-      path       : props.path,
-      content    : field,
-      errors     : props.errors,
-      classes    : ou.getIn(props.schema, ['x-hints', 'form', 'classes']),
-      title      : props.schema.title,
-      description: props.schema.description
-    },
-    field
-  );
+    propsForWrapper(props),
+    field);
+};
+
+
+var wrappedSection = function(props, fields) {
+  return (props.sectionWrapper || SectionWrapper)(
+    propsForWrapper(props),
+    fields);
 };
 
 
@@ -284,24 +319,8 @@ var fieldsForAlternative = function(props) {
 };
 
 
-var makeFieldset = function(props, fields) {
-  var extra = ou.getIn(props.schema, ['x-hints', 'form', 'classes']);
-  var legendClasses = [].concat('form-section-title',
-                                errorClass(props.errors) || []);
-  var title = makeTitle(props.schema.description, props.errors);
-  var headProps = ou.merge(props, {
-    className: legendClasses.join(' '),
-    title    : title
-  });
-
-  var classes = [].concat('form-section',
-                          (props.path.length > 0 ? 'form-subsection' : []),
-                          extra || []);
-
-  return $.fieldset({ className: classes.join(' '),
-                      key: props.key },
-                    $.legend(headProps, props.schema.title),
-                    fields);
+var makeKey = function(path) {
+  return path.join('_');
 };
 
 
@@ -318,7 +337,7 @@ var makeFields = function(props) {
   if (hints.fileUpload)
     return FileField(ou.merge(props, { mode: hints.fileUpload.mode }));
   else if (props.schema['oneOf'])
-    return makeFieldset(props, fieldsForAlternative(props));
+    return wrappedSection(props, fieldsForAlternative(props));
   else if (props.schema['enum']) {
     props = ou.merge(props, { options: props.schema['enum'] });
     return wrappedField(props, Selection(props));
@@ -328,9 +347,9 @@ var makeFields = function(props) {
   case "boolean":
     return wrappedField(props, CheckBox(props));
   case "object" :
-    return makeFieldset(props, fieldsForObject(props));
+    return wrappedSection(props, fieldsForObject(props));
   case "array"  :
-    return makeFieldset(props, fieldsForArray(props));
+    return wrappedSection(props, fieldsForArray(props));
   case "number" :
   case "integer":
   case "string" :
@@ -436,13 +455,14 @@ var Form = React.createClass({
   render: function() {
     var schema = this.props.schema;
     var fields = makeFields({
-      schema      : this.props.schema,
-      fieldWrapper: this.props.fieldWrapper,
-      hints       : this.props.hints,
-      path        : [],
-      update      : this.setValue,
-      getValue    : this.getValue,
-      getErrors   : this.getErrors
+      schema        : this.props.schema,
+      fieldWrapper  : this.props.fieldWrapper,
+      sectionWrapper: this.props.sectionWrapper,
+      hints         : this.props.hints,
+      path          : [],
+      update        : this.setValue,
+      getValue      : this.getValue,
+      getErrors     : this.getErrors
     });
 
     var submit = this.handleSubmit;

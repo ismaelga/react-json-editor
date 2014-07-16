@@ -162,6 +162,37 @@ var FieldWrapper = React.createClass({
 });
 
 
+var SectionWrapper = React.createClass({
+  render: function() {
+    var errors  = (this.props.errors || []).join('\n');
+    var level = this.props.path.length;
+    var classes = [].concat(errors ? 'error' : [],
+                            'form-section',
+                            (level > 0 ? 'form-subsection' : []),
+                            this.props.classes || []);
+    var helpClasses  =
+      'form-help' + (this.props.description ? '' : ' hidden');
+    var errorClasses =
+      'form-error' + (errors ? '' : ' hidden');
+
+    return (
+        <fieldset className={classes.join(' ')} key={this.props.key}>
+          <legend className="form-section-title">
+            {this.props.title}
+            <span className={helpClasses} title={this.props.description}>
+              ?
+            </span>
+            <span className={errorClasses} title={errors}>
+              !
+            </span>
+          </legend>
+          {this.props.children}
+        </fieldset>
+    );
+  }
+});
+
+
 var FormDemoPage = React.createClass({
   displayName: 'FormDemoPage',
 
@@ -199,6 +230,7 @@ var FormDemoPage = React.createClass({
               schema={this.state.schema}
               validate={validate}
               fieldWrapper={FieldWrapper}
+              sectionWrapper={SectionWrapper}
             />
           </li>
           <li className="flexItem">
