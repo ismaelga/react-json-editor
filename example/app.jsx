@@ -133,29 +133,33 @@ var SchemaEditor = React.createClass({
 });
 
 
-var renderField = function(field, props) {
-  var errors  = (props.errors || []).join('\n');
-  var classes = [].concat(errors ? 'error' : [],
-                          'form-element',
-                          props.classes || []);
-  var helpClasses  = 'form-help' + (props.description ? '' : ' invisible');
-  var errorClasses = 'form-error' + (errors ? '' : ' invisible');
+var FieldWrapper = React.createClass({
+  render: function() {
+    var errors  = (this.props.errors || []).join('\n');
+    var classes = [].concat(errors ? 'error' : [],
+                            'form-element',
+                            this.props.classes || []);
+    var helpClasses  =
+      'form-help' + (this.props.description ? '' : ' invisible');
+    var errorClasses =
+      'form-error' + (errors ? '' : ' invisible');
 
-  return (
-      <div className={classes.join(' ')} key={props.key}>
-        <label htmlFor={props.key}>
-          {props.title}
-        </label>
-        <span className={helpClasses} title={props.description}>
-          ?
-        </span>
-        {field}
-        <span className={errorClasses} title={errors}>
-          !
-        </span>
-      </div>
-  );
-};
+    return (
+        <div className={classes.join(' ')} key={this.props.key}>
+          <label htmlFor={this.props.key}>
+            {this.props.title}
+          </label>
+          <span className={helpClasses} title={this.props.description}>
+            ?
+          </span>
+          {this.props.children}
+          <span className={errorClasses} title={errors}>
+            !
+          </span>
+        </div>
+    );
+  }
+});
 
 
 var FormDemoPage = React.createClass({
@@ -194,7 +198,7 @@ var FormDemoPage = React.createClass({
               onSubmit={this.onFormSubmit}
               schema={this.state.schema}
               validate={validate}
-              renderField={renderField}
+              fieldWrapper={FieldWrapper}
             />
           </li>
           <li className="flexItem">

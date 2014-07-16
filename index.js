@@ -199,31 +199,36 @@ var makeTitle = function(description, errors) {
 };
 
 
-var renderField = function(field, props) {
-  var classes = [].concat(errorClass(props.errors) || [],
-                          'form-element',
-                          props.classes || []);
+var FieldWrapper = React.createClass({
+  render: function() {
+    var classes = [].concat(errorClass(this.props.errors) || [],
+                            'form-element',
+                            this.props.classes || []);
+    var title = makeTitle(this.props.description, this.props.errors);
 
-  return $.div({ className: classes.join(' '),
-                 key      : props.key,
-                 title    : makeTitle(props.description, props.errors)
-               },
-               $.label({ htmlFor: props.key }, props.title),
-               field);
-};
+    return $.div({ className: classes.join(' '),
+                   key      : this.props.key,
+                   title    : title
+                 },
+                 $.label({ htmlFor: this.props.key }, this.props.title),
+                 this.props.children);
+  }
+});
 
 
 var wrappedField = function(props, field) {
-  var propsToPass = {
-    key        : props.key,
-    path       : props.path,
-    errors     : props.errors,
-    classes    : ou.getIn(props.schema, ['x-hints', 'form', 'classes']),
-    title      : props.schema.title,
-    description: props.schema.description
-  };
-
-  return (props.renderField || renderField)(field, propsToPass);
+  return (props.fieldWrapper || FieldWrapper)(
+    {
+      key        : props.key,
+      path       : props.path,
+      content    : field,
+      errors     : props.errors,
+      classes    : ou.getIn(props.schema, ['x-hints', 'form', 'classes']),
+      title      : props.schema.title,
+      description: props.schema.description
+    },
+    field
+  );
 };
 
 
@@ -431,13 +436,13 @@ var Form = React.createClass({
   render: function() {
     var schema = this.props.schema;
     var fields = makeFields({
-      schema   : this.props.schema,
-      renderField: this.props.renderField,
-      hints    : this.props.hints,
-      path     : [],
-      update   : this.setValue,
-      getValue : this.getValue,
-      getErrors: this.getErrors
+      schema      : this.props.schema,
+      fieldWrapper: this.props.fieldWrapper,
+      hints       : this.props.hints,
+      path        : [],
+      update      : this.setValue,
+      getValue    : this.getValue,
+      getErrors   : this.getErrors
     });
 
     var submit = this.handleSubmit;
