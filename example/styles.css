@@ -50,8 +50,17 @@ html {
 }
 
 .form-element label {
-    display: inline-block;
     width: 10em;
+    display: inline-block;
+}
+
+.form-section dt {
+    float: left;
+    width: 5em;
+}
+
+.form-section dd {
+    margin-left: 5em;
 }
 
 .form-help, .form-error {

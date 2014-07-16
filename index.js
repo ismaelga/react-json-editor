@@ -167,11 +167,11 @@ var FileField = React.createClass({
   render: function() {
     var value = this.props.value || {};
     var list = [
+      $.input({ key: "input", type: "file", onChange: this.loadFile }),
       $.dl({ key: "fileProperties" },
            $.dt(null, "Name"), $.dd(null, value.name || '-'),
            $.dt(null, "Size"), $.dd(null, value.size || '-'),
-           $.dt(null, "Type"), $.dd(null, value.type || '-')),
-      $.input({ key: "input", type: "file", onChange: this.loadFile })
+           $.dt(null, "Type"), $.dd(null, value.type || '-'))
     ];
 
     return makeFieldset(this.props, list.concat(fieldsForObject(this.props)));
