@@ -267,8 +267,25 @@ var wrappedSection = function(props, fields) {
 };
 
 
+var fullOrdering = function(list, obj) {
+  var keys = Object.keys(obj);
+  var result = (list || []).slice();
+  var i, k;
+
+  for (i in keys) {
+    k = keys[i];
+    if (result.indexOf(k) < 0)
+      result.push(k);
+  }
+
+  return result;
+};
+
+
 var fieldsForObject = function(props) {
-  return Object.keys(props.schema.properties || {}).map(function(key) {
+  var keys = fullOrdering(props.schema['x-ordering'], props.schema.properties);
+
+  return keys.map(function(key) {
     return makeFields(ou.merge(props, {
       schema: props.schema.properties[key],
       path  : props.path.concat(key)
