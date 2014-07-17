@@ -268,9 +268,15 @@ var wrappedSection = function(props, fields) {
 
 
 var fullOrdering = function(list, obj) {
-  var keys = Object.keys(obj);
-  var result = (list || []).slice();
+  var keys = Object.keys(obj || {});
+  var result = [];
   var i, k;
+
+  for (i in list || []) {
+    k = list[i];
+    if (keys.indexOf(k) >= 0)
+      result.push(k);
+  }
 
   for (i in keys) {
     k = keys[i];
