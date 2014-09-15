@@ -72,6 +72,35 @@ parser.number = function(text) {
 };
 
 
+var UserDefinedField = React.createClass({
+  displayName: 'UserDefinedField',
+
+  normalize: function(text) {
+    var n = normalizer[this.props.type];
+    return n ? n(text) : text;
+  },
+  parse: function(text) {
+    var p = parser[this.props.type];
+    return p ? p(text) : text;
+  },
+  handleChange: function(value) {
+    var text = this.normalize(value);
+    this.props.update(this.props.path, text, this.parse(text));
+  },
+  handleKeyPress: function(event) {
+    if (event.keyCode == 13)
+      event.preventDefault();
+  },
+  render: function() {
+    return this.props.component({
+      value     : this.props.value || '',
+      onKeyPress: this.handleKeyPress,
+      onChange  : this.handleChange
+    });
+  }
+});
+
+
 var InputField = React.createClass({
   displayName: 'InputField',
 
@@ -349,6 +378,7 @@ var makeKey = function(path) {
 
 var makeFields = function(props) {
   var hints = ou.getIn(props, ['schema', 'x-hints']) || {};
+  var inputComponent = ou.getIn(hints, ['form', 'inputComponent']);
 
   props = ou.merge(props, {
     key   : makeKey(props.path),
@@ -357,7 +387,10 @@ var makeFields = function(props) {
     type  : props.schema.type
   });
 
-  if (hints.fileUpload)
+  if (inputComponent) {
+    props = ou.merge(props, { component: props.handlers[inputComponent] });
+    return wrappedField(props, UserDefinedField(props));
+  } else if (hints.fileUpload)
     return FileField(ou.merge(props, { mode: hints.fileUpload.mode }));
   else if (props.schema['oneOf'])
     return wrappedSection(props, fieldsForAlternative(props));
@@ -481,6 +514,7 @@ var Form = React.createClass({
       schema        : this.props.schema,
       fieldWrapper  : this.props.fieldWrapper,
       sectionWrapper: this.props.sectionWrapper,
+      handlers      : this.props.handlers,
       hints         : this.props.hints,
       path          : [],
       update        : this.setValue,
