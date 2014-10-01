@@ -376,6 +376,14 @@ var makeKey = function(path) {
 };
 
 
+var resolve = function(reference, context) {
+  if (!reference.match(/^#(\/([a-zA-Z_][a-zA-Z_0-9]*|[0-9]+))*$/))
+    throw new Error('reference '+reference+' has unsupported format');
+
+  return ou.getIn(context, reference.split('/').slice(1));
+};
+
+
 var makeFields = function(props) {
   var hints = ou.getIn(props, ['schema', 'x-hints']) || {};
   var inputComponent = ou.getIn(hints, ['form', 'inputComponent']);
@@ -392,6 +400,10 @@ var makeFields = function(props) {
     return wrappedField(props, UserDefinedField(props));
   } else if (hints.fileUpload)
     return FileField(ou.merge(props, { mode: hints.fileUpload.mode }));
+  else if (props.schema['$ref'])
+    return makeFields(ou.merge(props, {
+      schema: resolve(props.schema['$ref'], props.context)
+    }));
   else if (props.schema['oneOf'])
     return wrappedSection(props, fieldsForAlternative(props));
   else if (props.schema['enum']) {
@@ -415,24 +427,30 @@ var makeFields = function(props) {
 };
 
 
-var withDefaultOptions = function(data, schema) {
+var withDefaultOptions = function(data, schema, context) {
   var result;
   var key;
 
-  if (schema['enum']) {
+  if (schema['$ref']) {
+    result = withDefaultOptions(data, resolve(schema['$ref'], context), context);
+  } else if (schema['enum']) {
     result = data || schema['enum'][0];
   } else if (schema.oneOf) {
-    result = withDefaultOptions(data, schemaForAlternative(data, schema));
+    result = withDefaultOptions(data,
+                                schemaForAlternative(data, schema, context),
+                                context);
   } else if (schema.type == 'object') {
     result = ou.merge(data);
     for (key in schema.properties)
       result[key] = withDefaultOptions((data || {})[key],
-                                       schema.properties[key]);
+                                       schema.properties[key],
+                                       context);
   } else if (schema.type == 'array') {
     result = [];
     for (key = 0; key < (data || []).length; ++key)
       result[key] = withDefaultOptions((data || [])[key],
-                                       schema.items);
+                                       schema.items,
+                                       context);
   } else {
     result = data;
   }
@@ -451,8 +469,12 @@ var hashedErrors = function(errors) {
 };
 
 
-var normalise = function(data, schema) {
-  return ou.prune(withDefaultOptions(data, schema));
+var normalise = function(data, schema, context) {
+  return ou.prune(withDefaultOptions(data, schema, context));
+};
+
+var context = function(props) {
+  return props.context || props.schema;
 };
 
 
@@ -460,10 +482,10 @@ var Form = React.createClass({
   displayName: 'Form',
 
   getInitialState: function() {
-    var errors =
-      hashedErrors(this.props.validate(this.props.schema, this.props.values));
-    return { values: this.props.values,
-             output: this.props.values,
+    var values = this.props.values;
+    var errors = this.validate(this.props.schema, values, context(this.props));
+    return { values: values,
+             output: values,
              errors: errors };
   },
   componentWillReceiveProps: function(props) {
@@ -472,14 +494,17 @@ var Form = React.createClass({
     this.setState({
       values: values,
       output: output,
-      errors: hashedErrors(this.props.validate(props.schema, output))
+      errors: this.validate(props.schema, output, context(props))
     });
   },
   setValue: function(path, raw, parsed) {
     var schema = this.props.schema;
-    var values = normalise(ou.setIn(this.state.values, path, raw), schema);
-    var output = normalise(ou.setIn(this.state.output, path, parsed), schema);
-    var errors = hashedErrors(this.props.validate(schema, output));
+    var ctx    = context(this.props);
+    var values = normalise(ou.setIn(this.state.values, path, raw),
+                           schema, ctx);
+    var output = normalise(ou.setIn(this.state.output, path, parsed),
+                           schema, ctx);
+    var errors = this.validate(schema, output, ctx);
 
     if (this.props.submitOnChange)
       this.props.onSubmit(output, null, errors);
@@ -495,6 +520,9 @@ var Form = React.createClass({
   },
   getErrors: function(path) {
     return this.state.errors[makeKey(path)];
+  },
+  validate: function(schema, values, context) {
+    return hashedErrors(this.props.validate(schema, values, context));
   },
   preventSubmit: function(event) {
     event.preventDefault();
@@ -512,6 +540,7 @@ var Form = React.createClass({
     var schema = this.props.schema;
     var fields = makeFields({
       schema        : this.props.schema,
+      context       : context(this.props),
       fieldWrapper  : this.props.fieldWrapper,
       sectionWrapper: this.props.sectionWrapper,
       handlers      : this.props.handlers,

@@ -9,6 +9,22 @@ window.React = React;
 
 
 var schema = {
+  definitions: {
+    weight: {
+      title: "Weight",
+      type: "object",
+      properties: {
+        amount: {
+          type: "number",
+          minimum: 0,
+          exclusiveMinimum: true
+        },
+        unit: {
+          enum: [ "kg", "lbs" ]
+        }
+      }
+    }
+  },
   title: "Example form",
   description: "A form based on a schema",
   type: "object",
@@ -33,10 +49,7 @@ var schema = {
       minimum: 1
     },
     weight: {
-      title: "Your weight in kg",
-      type: "number",
-      minimum: 0,
-      exclusiveMinimum: true
+      "$ref": "#/definitions/weight"
     },
     color: {
       title: "Favourite colour",

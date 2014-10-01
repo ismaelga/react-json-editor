@@ -26,7 +26,7 @@
     "browserify": "^4.1.11",
     "gulp": "^3.8.2",
     "gulp-rename": "^1.2.0",
-    "plexus-validate": "~0.0.2",
+    "plexus-validate": "~0.0.3",
     "reactify": "^0.13.1",
     "vinyl-source-stream": "^0.1.1"
   },
