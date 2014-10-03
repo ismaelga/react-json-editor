@@ -376,23 +376,30 @@ var makeKey = function(path) {
 };
 
 
-var resolve = function(reference, context) {
-  if (!reference.match(/^#(\/([a-zA-Z_][a-zA-Z_0-9]*|[0-9]+))*$/))
-    throw new Error('reference '+reference+' has unsupported format');
+var resolve = function(schema, context) {
+  var reference = schema['$ref'];
 
-  return ou.getIn(context, reference.split('/').slice(1));
+  if (reference) {
+    if (!reference.match(/^#(\/([a-zA-Z_][a-zA-Z_0-9]*|[0-9]+))*$/))
+      throw new Error('reference '+reference+' has unsupported format');
+
+    return ou.getIn(context, reference.split('/').slice(1));
+  } else
+    return schema;
 };
 
 
 var makeFields = function(props) {
-  var hints = ou.getIn(props, ['schema', 'x-hints']) || {};
+  var schema = resolve(props.schema, props.context);
+  var hints = schema['x-hints'] || {};
   var inputComponent = ou.getIn(hints, ['form', 'inputComponent']);
 
   props = ou.merge(props, {
+    schema: schema,
     key   : makeKey(props.path),
     value : props.getValue(props.path),
     errors: props.getErrors(props.path),
-    type  : props.schema.type
+    type  : schema.type
   });
 
   if (inputComponent) {
@@ -400,18 +407,14 @@ var makeFields = function(props) {
     return wrappedField(props, UserDefinedField(props));
   } else if (hints.fileUpload)
     return FileField(ou.merge(props, { mode: hints.fileUpload.mode }));
-  else if (props.schema['$ref'])
-    return makeFields(ou.merge(props, {
-      schema: resolve(props.schema['$ref'], props.context)
-    }));
-  else if (props.schema['oneOf'])
+  else if (schema['oneOf'])
     return wrappedSection(props, fieldsForAlternative(props));
-  else if (props.schema['enum']) {
-    props = ou.merge(props, { options: props.schema['enum'] });
+  else if (schema['enum']) {
+    props = ou.merge(props, { options: schema['enum'] });
     return wrappedField(props, Selection(props));
   }
 
-  switch (props.schema.type) {
+  switch (schema.type) {
   case "boolean":
     return wrappedField(props, CheckBox(props));
   case "object" :
@@ -430,26 +433,24 @@ var makeFields = function(props) {
 var withDefaultOptions = function(data, schema, context) {
   var result;
   var key;
+  var effectiveSchema = resolve(schema, context);
 
-  if (schema['$ref']) {
-    result = withDefaultOptions(data, resolve(schema['$ref'], context), context);
-  } else if (schema['enum']) {
-    result = data || schema['enum'][0];
-  } else if (schema.oneOf) {
-    result = withDefaultOptions(data,
-                                schemaForAlternative(data, schema, context),
-                                context);
-  } else if (schema.type == 'object') {
+  if (effectiveSchema.oneOf)
+    effectiveSchema = schemaForAlternative(data, effectiveSchema, context);
+
+  if (effectiveSchema['enum']) {
+    result = data || effectiveSchema['enum'][0];
+  } else if (effectiveSchema.type == 'object') {
     result = ou.merge(data);
-    for (key in schema.properties)
+    for (key in effectiveSchema.properties)
       result[key] = withDefaultOptions((data || {})[key],
-                                       schema.properties[key],
+                                       effectiveSchema.properties[key],
                                        context);
-  } else if (schema.type == 'array') {
+  } else if (effectiveSchema.type == 'array') {
     result = [];
     for (key = 0; key < (data || []).length; ++key)
       result[key] = withDefaultOptions((data || [])[key],
-                                       schema.items,
+                                       effectiveSchema.items,
                                        context);
   } else {
     result = data;
