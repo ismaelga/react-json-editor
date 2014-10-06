@@ -49,6 +49,7 @@ var schema = {
       minimum: 1
     },
     weight: {
+      title: "Your weight",
       "$ref": "#/definitions/weight"
     },
     color: {
