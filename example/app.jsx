@@ -20,7 +20,10 @@ var schema = {
           exclusiveMinimum: true
         },
         unit: {
-          enum: [ "kg", "lbs" ]
+          enum: [ "kg", "lbs" ],
+          // optional, see https://github.com/json-schema/json-schema/wiki/enumNames-(v5-proposal)
+          // this is handy for i18n since then you want to separate values/names
+          enumNames: [ "KG", "lbs"]
         }
       }
     }
