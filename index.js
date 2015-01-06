@@ -154,14 +154,16 @@ var Selection = React.createClass({
     this.props.update(this.props.path, val, val);
   },
   render: function() {
+    var names = this.props.names;
+
     return $.select(
       {
         name    : this.props.key,
-        value   : this.props.value || this.props.options[0],
+        value   : this.props.value || this.props.values[0],
         onChange: this.handleChange
       },
-      this.props.options.map(function(opt) {
-        return $.option({ key: opt, value: opt }, opt);
+      this.props.values.map(function(opt, i) {
+        return $.option({ key: opt, value: opt }, names[i] || opt);
       }));
   }
 });
@@ -424,7 +426,9 @@ var makeFields = function(props) {
   else if (schema['oneOf'])
     return wrappedSection(props, fieldsForAlternative(props));
   else if (schema['enum']) {
-    props = ou.merge(props, { options: schema['enum'] });
+    props = ou.merge(props, {
+        values: schema['enum'],
+        names: schema['enumNames'] || schema['enum'] });
     return wrappedField(props, Selection(props));
   }
 
