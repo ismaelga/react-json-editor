@@ -267,4 +267,6 @@ var FormDemoPage = React.createClass({
 });
 
 
-React.renderComponent(FormDemoPage(), document.getElementById('react-main'));
+React.render(
+  React.createElement(FormDemoPage),
+  document.getElementById('react-main'));

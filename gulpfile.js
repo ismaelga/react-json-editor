@@ -21,15 +21,15 @@ gulp.task('html', function() {
 // see http://blog.avisi.nl/2014/04/25/how-to-keep-a-fast-build-with-browserify-and-reactjs/
 // for further instructions (watchify etc.)
 gulp.task('scripts', function() {
-    var bundler = browserify('./example/app.jsx');
+    var bundler = browserify('./example/app.jsx', {
+        insertGlobals: true,
+        debug: !process.env.production
+    });
 
     bundler.transform(reactify);
 
     var rebundle = function() {
-        var stream = bundler.bundle({
-            insertGlobals: true,
-            debug: !process.env.production
-        });
+        var stream = bundler.bundle();
         stream.on('error', function(err) {
             console.log('Browserify error : ' + err);
         });

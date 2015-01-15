@@ -19,16 +19,16 @@
   },
   "main": "./index.js",
   "dependencies": {
-    "react": "~0.10.0",
+    "react": "~0.12.2",
     "plexus-objective": "~0.0.1"
   },
   "devDependencies": {
-    "browserify": "^4.1.11",
-    "gulp": "^3.8.2",
+    "browserify": "^8.1.0",
+    "gulp": "^3.8.10",
     "gulp-rename": "^1.2.0",
-    "plexus-validate": "~0.0.3",
-    "reactify": "^0.13.1",
-    "vinyl-source-stream": "^0.1.1"
+    "plexus-validate": "~0.0.4",
+    "reactify": "^0.17.1",
+    "vinyl-source-stream": "^1.0.0"
   },
   "repository": {
     "type": "git",

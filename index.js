@@ -92,7 +92,7 @@ var UserDefinedField = React.createClass({
       event.preventDefault();
   },
   render: function() {
-    return this.props.component({
+    return React.createElement(this.props.component, {
       value     : this.props.value || '',
       onKeyPress: this.handleKeyPress,
       onChange  : this.handleChange
@@ -285,14 +285,14 @@ var propsForWrapper = function(props) {
 
 
 var wrappedField = function(props, field) {
-  return (props.fieldWrapper || FieldWrapper)(
+  return React.createElement(props.fieldWrapper || FieldWrapper,
     propsForWrapper(props),
     field);
 };
 
 
 var wrappedSection = function(props, fields) {
-  return (props.sectionWrapper || SectionWrapper)(
+  return React.createElement(props.sectionWrapper || SectionWrapper,
     propsForWrapper(props),
     fields);
 };
@@ -420,21 +420,22 @@ var makeFields = function(props) {
 
   if (inputComponent) {
     props = ou.merge(props, { component: props.handlers[inputComponent] });
-    return wrappedField(props, UserDefinedField(props));
+    return wrappedField(props, React.createElement(UserDefinedField, props));
   } else if (hints.fileUpload)
-    return FileField(ou.merge(props, { mode: hints.fileUpload.mode }));
+    return React.createElement(
+      FileField, ou.merge(props, { mode: hints.fileUpload.mode }));
   else if (schema['oneOf'])
     return wrappedSection(props, fieldsForAlternative(props));
   else if (schema['enum']) {
     props = ou.merge(props, {
         values: schema['enum'],
         names: schema['enumNames'] || schema['enum'] });
-    return wrappedField(props, Selection(props));
+    return wrappedField(props, React.createElement(Selection, props));
   }
 
   switch (schema.type) {
   case "boolean":
-    return wrappedField(props, CheckBox(props));
+    return wrappedField(props, React.createElement(CheckBox, props));
   case "object" :
     return wrappedSection(props, fieldsForObject(props));
   case "array"  :
@@ -443,7 +444,7 @@ var makeFields = function(props) {
   case "integer":
   case "string" :
   default:
-    return wrappedField(props, InputField(props));
+    return wrappedField(props, React.createElement(InputField, props));
   }
 };
 
