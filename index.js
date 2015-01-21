@@ -149,9 +149,15 @@ var CheckBox = React.createClass({
 var Selection = React.createClass({
   displayName: 'Selection',
 
+  normalize: function(text) {
+    return normalizer[this.props.type](text);
+  },
+  parse: function(text) {
+    return parser[this.props.type](text);
+  },
   handleChange: function(event) {
-    var val = event.target.value;
-    this.props.update(this.props.path, val, val);
+    var val = this.normalize(event.target.value);
+    this.props.update(this.props.path, val, this.parse(val));
   },
   render: function() {
     var names = this.props.names;
