@@ -19,7 +19,6 @@
   },
   "main": "./index.js",
   "dependencies": {
-    "react": "~0.12.2",
     "plexus-objective": "~0.0.1"
   },
   "devDependencies": {
@@ -29,6 +28,9 @@
     "plexus-validate": "~0.0.4",
     "reactify": "^0.17.1",
     "vinyl-source-stream": "^1.0.0"
+  },
+  "peerDependencies": {
+    "react": "~0.12.2"
   },
   "repository": {
     "type": "git",
