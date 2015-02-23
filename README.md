@@ -2,17 +2,7 @@
 
 A dynamic form component for react using a specification format based on JSON-Schema.
 
-For an example, see [http://appliedmathematicsanu.github.io/plexus-form/](http://appliedmathematicsanu.github.io/plexus-form/).
-
-# Development
-
-Make sure you have NPM and Gulp installed. Gulp is needed to build the example.
-
-1. `npm install`
-2. `gulp`
-3. Examine `dist`
-
-In order to deploy dist to `gh-pages`, [consider using a subtree](https://gist.github.com/cobyism/4730490).
+A usage example can be found at []().
 
 # License
 

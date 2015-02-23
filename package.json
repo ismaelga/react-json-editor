@@ -21,14 +21,6 @@
   "dependencies": {
     "plexus-objective": "~0.0.1"
   },
-  "devDependencies": {
-    "browserify": "^8.1.0",
-    "gulp": "^3.8.10",
-    "gulp-rename": "^1.2.0",
-    "plexus-validate": "~0.0.4",
-    "reactify": "^0.17.1",
-    "vinyl-source-stream": "^1.0.0"
-  },
   "peerDependencies": {
     "react": "~0.12.2"
   },
