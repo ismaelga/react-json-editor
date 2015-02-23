@@ -562,6 +562,22 @@ var Form = React.createClass({
     if (event.keyCode == 13 && this.props.enterKeySubmits)
       this.props.onSubmit(this.state.output, this.props.enterKeySubmits);
   },
+  renderButtons: function() {
+    var submit = this.handleSubmit;
+
+    if (typeof this.props.buttons == 'function')
+      return this.props.buttons(submit);
+    else {
+      var buttons = this.props.buttons || ['Cancel', 'Submit']
+        .map(function(value) {
+          return $.input({ type   : 'submit',
+                           key    : value,
+                           value  : value,
+                           onClick: submit })
+        });
+      return $.p(null, buttons);
+    }
+  },
   render: function() {
     var schema = this.props.schema;
     var fields = makeFields({
@@ -577,26 +593,13 @@ var Form = React.createClass({
       getErrors     : this.getErrors
     });
 
-    var submit = this.handleSubmit;
-    var buttonValues = this.props.buttons;
-
-    var buttons = function() {
-      return $.p(null,
-                 (buttonValues || ['Cancel', 'Submit']).map(function(value) {
-                   return $.input({ type   : 'submit',
-                                    key    : value,
-                                    value  : value,
-                                    onClick: submit })
-                 }));
-    };
-
     return $.form({ onSubmit  : this.preventSubmit,
                     onKeyPress: this.handleKeyPress,
                     className : this.props.className
                   },
-                  this.props.extraButtons ? buttons() : $.span(),
+                  this.props.extraButtons ? this.renderButtons() : $.span(),
                   fields,
-                  buttons());
+                  this.renderButtons());
   }
 });
 
