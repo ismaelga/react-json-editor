@@ -568,7 +568,7 @@ var Form = React.createClass({
     if (typeof this.props.buttons == 'function')
       return this.props.buttons(submit);
     else {
-      var buttons = this.props.buttons || ['Cancel', 'Submit']
+      var buttons = (this.props.buttons || ['Cancel', 'Submit'])
         .map(function(value) {
           return $.input({ type   : 'submit',
                            key    : value,
