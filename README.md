@@ -2,7 +2,7 @@
 
 A dynamic form component for react using a specification format based on JSON-Schema.
 
-A usage example can be found at []().
+A usage example can be found at https://github.com/AppliedMathematicsANU/plexus-form-example.
 
 # License
 
