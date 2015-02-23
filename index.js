@@ -590,8 +590,9 @@ var Form = React.createClass({
                  }));
     };
 
-    return $.form({ onSubmit: this.preventSubmit,
-                    onKeyPress: this.handleKeyPress
+    return $.form({ onSubmit  : this.preventSubmit,
+                    onKeyPress: this.handleKeyPress,
+                    className : this.props.className
                   },
                   this.props.extraButtons ? buttons() : $.span(),
                   fields,
