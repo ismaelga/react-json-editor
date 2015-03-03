@@ -2,6 +2,9 @@
   "name": "plexus-form",
   "version": "0.1.0",
   "description": "A dynamic form component for react using JSON-Schema.",
+  "scripts": {
+    "dist": "webpack --config ./config/webpack.dist.js && webpack --config ./config/webpack.dist.min.js"
+  },
   "keywords": [
     "JSON-Schema",
     "react",
@@ -17,7 +20,7 @@
     "name": "Olaf Delgado-Friedrichs",
     "email": "olaf.delgado@gmail.com"
   },
-  "main": "./index.js",
+  "main": "dist/plexus-form.js",
   "dependencies": {
     "plexus-objective": "~0.0.1"
   },
@@ -27,5 +30,10 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/AppliedMathematicsANU/plexus-form.git"
+  },
+  "devDependencies": {
+    "jsx-loader": "^0.12.2",
+    "webpack": "^1.6.0",
+    "xtend": "^4.0.0"
   }
 }
