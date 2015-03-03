@@ -1,0 +1,87 @@
+*, *:before, *:after {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html {
+    font-size: 13px;
+    font-family: arial, sans-serif;
+}
+
+.flexContainer {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+.flexItem {
+  margin-right: 20px;
+}
+
+.error, .error * {
+    color: red;
+}
+
+.form-section {
+    border: 2px solid gray;
+}
+
+.form-subsection {
+    border: none;
+    padding: 0;
+    margin: 0.5em 0;
+}
+
+.form-section-title {
+    font-weight: bold;
+}
+
+.form-subsection .form-section-title {
+    padding: 5px 0;
+}
+
+.form-element {
+    position: relative;
+}
+
+.form-element label {
+    width: 10em;
+    display: inline-block;
+}
+
+.form-section dt {
+    float: left;
+    width: 5em;
+}
+
+.form-section dd {
+    margin-left: 5em;
+}
+
+.form-help, .form-error {
+    display: inline-block;
+    border: thin solid;
+    border-radius: 50%;
+    margin: 0 2px;
+}
+
+.form-help {
+    padding: 0 4px;
+}
+
+.form-error {
+    padding: 0 6px;
+}
+
+.invisible {
+    visibility: hidden;
+}
+
+.hidden {
+    display: none;
+}
