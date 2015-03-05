@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "A dynamic form component for react using JSON-Schema.",
   "scripts": {
+    "start": "node server.js",
+    "gh-pages": "webpack --config ./config/webpack.gh-pages.js",
+    "deploy-gh-pages": "scripts/deploy.sh",
     "dist": "webpack --config ./config/webpack.dist.js && webpack --config ./config/webpack.dist.min.js"
   },
   "keywords": [
@@ -32,8 +35,21 @@
     "url": "https://github.com/AppliedMathematicsANU/plexus-form.git"
   },
   "devDependencies": {
+    "css-loader": "^0.9.1",
+    "file-loader": "^0.8.1",
+    "highlight.js": "^8.4.0",
+    "html-loader": "^0.2.3",
+    "html-webpack-plugin": "^1.1.0",
     "jsx-loader": "^0.12.2",
+    "marked": "^0.3.3",
+    "plexus-validate": "0.0.4",
+    "purecss": "^0.5.0",
+    "react-ghfork": "^0.2.2",
+    "react-hot-loader": "^1.1.6",
+    "style-loader": "^0.8.3",
+    "url-loader": "^0.5.5",
     "webpack": "^1.6.0",
+    "webpack-dev-server": "^1.7.0",
     "xtend": "^4.0.0"
   }
 }

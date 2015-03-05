@@ -1,1 +1,3 @@
+*.log
+gh-pages/
 node_modules/
