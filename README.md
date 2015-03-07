@@ -1,8 +1,12 @@
 # plexus-form
 
-A dynamic form component for [React](http://facebook.github.io/react/) using a specification format based on [JSON-Schema](http://json-schema.org/).
+A dynamic form component for [React](http://facebook.github.io/react/) using a
+specification format based on [JSON-Schema](http://json-schema.org/).
 
-The full code for the demo above can be found at https://github.com/AppliedMathematicsANU/plexus-form/blob/master/demos/demo.jsx.
+**[Demo](http://appliedmathematicsanu.github.io/plexus-form/)**
+
+The full code for the demo can be found at
+https://github.com/AppliedMathematicsANU/plexus-form/blob/master/demos/demo.jsx.
 
 Plexus-form takes a JavaScript object describing the shape of the data we want
 a user to provide - a *schema* - and automatically creates a form based on
