@@ -66,15 +66,22 @@ The following JSON-Schema properties are supported:
   - `type`
   - `$ref`
 
+Additional properties relevant to data validation are implemented by
+plexus-validate.
+
+JSON-Schema references can only point to elements within the schema object
+itself. URI references are not supported.
+
 Plexus-form extends the JSON-Schema specification with two new properties
-`x-hints` and `x-ordering`. The latter, `x-ordering`, specifies a display
-order for fields defined by the current object. The former, `x-hints`, can be
-used for additional information on how to handle or display a data
-element. Currently, plexus-form only uses this to support user-defined field
-handlers.
+`x-hints` and `x-ordering`. The latter, `x-ordering`, specifies a default
+order for the elements under the current object. The former, `x-hints`, can be
+used to annotate a schema with additional hints on how the data is to be
+handled or displayed. The relevant pieces of information for plexus-form are
+found under `schema["x-hints"].form`. We'll explore these extension in more
+detail in the following sections.
 
 
-## `x-ordering` example:
+## Enforced display order example:
 
     var schema = {
       type      : "object",
@@ -87,7 +94,101 @@ handlers.
     };
 
 
-## `x-hints` example:
+## Custom CSS classes example:
+
+Plexus-form assigns the following CSS classes automatically:
+
+- `form-section`
+- `form-subsection`
+- `form-section-title`
+- `form-element`
+
+Additional CSS classes can be specified via `x-hints` like so:
+
+    var schema = {
+      type      : "object",
+      properties: {
+        name : {
+          title: "Name",
+          "x-hints": {
+            form: {
+              classes: [ "form-text-field", "form-name-field" ]
+            }
+          }
+        },
+        email: {
+          title: "Email",
+          "x-hints": {
+            form: {
+              classes: [ "form-text-field", "form-email-field" ]
+            }
+          }
+        }
+      },
+      "x-hints": {
+        form: {
+          classes: [ "form-person-section" ]
+        }
+      }
+    };
+
+
+## Alternatives selection example:
+
+    var schema = {
+      type      : "object",
+      properties: {
+        contact: {
+          title      : "Contact details",
+          description: "How would you like to be contacted?",
+          type       : "object",
+          properties : {
+            contactType: {
+              title      : "Contact medium",
+              description: "Please pick your preferred medium"
+            }
+          },
+          oneOf: [
+            {
+              properties: {
+                contactType: { enum: [ "Email" ] },
+                email      : { title: "Email address" }
+              }
+            },
+            {
+              properties: {
+                contactType: { enum: [ "Telephone" ] },
+                phoneNumber: { title: "Telephone number" }
+              }
+            },
+            {
+              properties: {
+                contactType: { enum: [ "Physical mail" ] },
+                address    : { title: "Street address" },
+                postcode   : { title: "Post or area code" },
+                state      : { title: "State or province" },
+                country    : { title: "Country" }
+              }
+            }
+          ],
+          "x-hints": { form: { selector: "contactType" } }
+        }
+      }
+    };
+
+
+## User-defined input component example:
+
+The following example shows how to associate a user-defined input handler with
+a data element. The association happens indirectly via a symbolic name and a
+`handler` object that assigns functions to names so that the schema itself
+remains easily serializable. More useful examples could be autocompleting text
+fields, image uploaders with a preview or color pickers.
+
+The React component handling a data element (here `Tracer`) must call
+`this.props.onChange` whenever the data has changed. It should delegate
+low-level key press events it does not handle itself to
+`this.props.onKeyPress`.
 
     var schema = {
       title    : "Mouse Tracer",
@@ -116,7 +217,7 @@ handlers.
       },
 
       render: function() {
-        return <span/>
+        return <span onKeyPress = {this.handleKeyPress}/>
       }
     });
 
