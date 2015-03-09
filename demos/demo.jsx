@@ -114,24 +114,6 @@ var schema = {
       items: {
         type: "string"
       }
-    },
-    motto: {
-      title: "Your motto (file upload)",
-      type: "object",
-      "x-hints": {
-        "fileUpload": {
-          "mode": "text"
-        },
-        "form": {
-          classes: "important-file"
-        }
-      },
-      properties: {
-        caption: {
-          title: "Caption",
-          type: "string"
-        }
-      }
     }
   }
 };
