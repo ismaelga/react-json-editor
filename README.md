@@ -182,34 +182,57 @@ Additional CSS classes can be specified via `x-hints` like so:
 The following example shows how to associate a user-defined input handler with
 a data element. The association happens indirectly via a symbolic name and a
 `handler` object that assigns functions to names so that the schema itself
-remains easily serializable. More useful examples could be autocompleting text
-fields, image uploaders with a preview or color pickers.
+remains easily serializable. We use a very simplistic file uploader component
+as a demonstration case. Other useful applications of these technique could be
+an autocompleting text field or a color picker.
 
-The React component handling a data element (here `Tracer`) must call
+The React component handling a data element (here `Uploader`) must call
 `this.props.onChange` whenever the data has changed. It should delegate
 low-level key press events it does not handle itself to
-`this.props.onKeyPress`.
+`this.props.onKeyPress`, which enables the `<Form>` component to handle the
+"Enter" key consistently throughout the form.
 
     var schema = {
-      title    : "Mouse Tracer",
-      "x-hints": {
+      "x-hints" : {
         form: {
-          inputComponent: "tracer"
+          inputComponent: "uploader"
         }
       }
     };
 
-    var Tracer = React.createClass({
+    var Uploader = React.createClass({
       componentDidMount: function() {
-        document.addEventListener('mousemove', this.handleMouseMove);
+        var input = document.createElement('input');
+        input.type = 'file';
+        input.multiple = false;
+        input.addEventListener('change', this.loadFile);
+        this._input = input;
       },
 
-      componentWillUnmount: function() {
-        document.removeEventListener('mousemove', this.handleMouseMove);
+      loadFile: function(event) {
+        var files = event.target.files;
+        var handleData = this.handleData;
+        var file = files[0];
+        var reader = new FileReader();
+
+        reader.onload = function(event) {
+          handleData(file, event.target.result);
+        };
+
+        reader.readAsText(file);
       },
 
-      handleMouseMove: function(event) {
-        this.props.onChange([event.pageX, event.pageY]);
+      handleData: function(file, data) {
+        this.props.onChange({
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          data: data.slice(0, 1000) // truncate data in this demo
+        });
+      },
+
+      openSelector: function() {
+        this._input.click();
       },
 
       handleKeyPress: function(event) {
@@ -217,19 +240,26 @@ low-level key press events it does not handle itself to
       },
 
       render: function() {
-        return <span onKeyPress = {this.handleKeyPress}/>
+        return (
+          <button onClick = { this.openSelector }>
+            Select a file
+          </button>
+        );
       }
     });
 
-    var handlers = {
-      tracer: Tracer
+    var onSubmit = function(data, buttonValue, errors) {
+      alert('Data  : '+JSON.stringify(data)+'\n'+
+            'Button: '+buttonValue+'\n'+
+            'Errors: '+JSON.stringify(errors));
     };
 
-    var onSubmit = function(data, buttonValue, errors) {
-      console.log(data);
+    var handlers = {
+      uploader: Uploader
     };
 
     React.render(<Form
+                   buttons  = {[]}
                    schema   = {schema}
                    validate = {validate}
                    onSubmit = {onSubmit}
