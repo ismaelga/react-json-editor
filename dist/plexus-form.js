@@ -11,41 +11,41 @@
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
-/******/
+
 /******/ 	// The require function
 /******/ 	function __webpack_require__(moduleId) {
-/******/
+
 /******/ 		// Check if module is in cache
 /******/ 		if(installedModules[moduleId])
 /******/ 			return installedModules[moduleId].exports;
-/******/
+
 /******/ 		// Create a new module (and put it into the cache)
 /******/ 		var module = installedModules[moduleId] = {
 /******/ 			exports: {},
 /******/ 			id: moduleId,
 /******/ 			loaded: false
 /******/ 		};
-/******/
+
 /******/ 		// Execute the module function
 /******/ 		modules[moduleId].call(module.exports, module, module.exports, __webpack_require__);
-/******/
+
 /******/ 		// Flag the module as loaded
 /******/ 		module.loaded = true;
-/******/
+
 /******/ 		// Return the exports of the module
 /******/ 		return module.exports;
 /******/ 	}
-/******/
-/******/
+
+
 /******/ 	// expose the modules object (__webpack_modules__)
 /******/ 	__webpack_require__.m = modules;
-/******/
+
 /******/ 	// expose the module cache
 /******/ 	__webpack_require__.c = installedModules;
-/******/
+
 /******/ 	// __webpack_public_path__
 /******/ 	__webpack_require__.p = "";
-/******/
+
 /******/ 	// Load entry module and return exports
 /******/ 	return __webpack_require__(0);
 /******/ })
@@ -57,7 +57,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	/*
 	The MIT License (MIT)
 
-	Copyright (c) 2014 The Australian National University
+	Copyright (c) 2015 The Australian National University
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -560,8 +560,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var ou = __webpack_require__(5);
 
-	var types = __webpack_require__(14);
-	var wrapped = __webpack_require__(15);
+	var types = __webpack_require__(16);
+	var wrapped = __webpack_require__(17);
 
 
 	var FileField = React.createClass({
@@ -620,8 +620,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var React = __webpack_require__(2);
 	var $ = React.DOM;
 
-	var normalizer = __webpack_require__(16);
-	var parser = __webpack_require__(17);
+	var normalizer = __webpack_require__(14);
+	var parser = __webpack_require__(15);
 
 
 	var InputField = React.createClass({
@@ -664,8 +664,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var React = __webpack_require__(2);
 
-	var normalizer = __webpack_require__(16);
-	var parser = __webpack_require__(17);
+	var normalizer = __webpack_require__(14);
+	var parser = __webpack_require__(15);
 
 
 	var UserDefinedField = React.createClass({
@@ -710,8 +710,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var React = __webpack_require__(2);
 	var $ = React.DOM;
 
-	var normalizer = __webpack_require__(16);
-	var parser = __webpack_require__(17);
+	var normalizer = __webpack_require__(14);
+	var parser = __webpack_require__(15);
 
 
 	var Selection = React.createClass({
@@ -762,8 +762,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var ou = __webpack_require__(5);
 
 	var resolve = __webpack_require__(7);
-	var types = __webpack_require__(14);
-	var wrapped = __webpack_require__(15);
+	var types = __webpack_require__(16);
+	var wrapped = __webpack_require__(17);
 
 
 	module.exports = function(fields, props) {
@@ -783,6 +783,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    props = ou.merge(props, { component: props.handlers[inputComponent] });
 	    return wrapped.field(props, React.createElement(fields.UserDefinedField, props));
 	  } else if (hints.fileUpload) {
+	    console.warn("DEPRECATION WARNING: built-in file upload will be removed");
 	    // FileField cannot depend on fields directly (cyclic dependency)
 	    props = ou.merge(props, { fields: fields });
 	    return React.createElement(
@@ -820,6 +821,58 @@ return /******/ (function(modules) { // webpackBootstrap
 
 /***/ },
 /* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+
+	exports.string = function(text) {
+	  return text
+	    .replace(/\s+/g, ' ')
+	    .replace(/^ /, '')
+	    .replace(/\u00ad/g, '');
+	};
+
+	exports.integer = function(text) {
+	  return text
+	    .replace(/[^-\d]/g, '')
+	    .replace(/(.)-/g, '$1');
+	};
+
+	exports.number = function(text) {
+	  return text
+	    .replace(/[^-\.e\d]/ig, '')
+	    .replace(/(e[^e]*)e/ig, '$1')
+	    .replace(/([e.][^.]*)\./ig, '$1')
+	    .replace(/([^e])-/ig, '$1')
+	    .replace(/(e-?\d\d\d)\d/ig, '$1');
+	};
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var normalizer = __webpack_require__(14);
+
+
+	exports.string = function(text) {
+	  return normalizer.string(text);
+	};
+
+	exports.integer = function(text) {
+	  return text ? parseInt(normalizer.integer(text)) : null;
+	};
+
+	exports.number = function(text) {
+	  return text ? parseFloat(normalizer.number(text)) : null;
+	};
+
+
+/***/ },
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -885,7 +938,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 15 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -981,58 +1034,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-
-	exports.string = function(text) {
-	  return text
-	    .replace(/\s+/g, ' ')
-	    .replace(/^ /, '')
-	    .replace(/\u00ad/g, '');
-	};
-
-	exports.integer = function(text) {
-	  return text
-	    .replace(/[^-\d]/g, '')
-	    .replace(/(.)-/g, '$1');
-	};
-
-	exports.number = function(text) {
-	  return text
-	    .replace(/[^-\.e\d]/ig, '')
-	    .replace(/(e[^e]*)e/ig, '$1')
-	    .replace(/([e.][^.]*)\./ig, '$1')
-	    .replace(/([^e])-/ig, '$1')
-	    .replace(/(e-?\d\d\d)\d/ig, '$1');
-	};
-
-
-/***/ },
-/* 17 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var normalizer = __webpack_require__(16);
-
-
-	exports.string = function(text) {
-	  return normalizer.string(text);
-	};
-
-	exports.integer = function(text) {
-	  return text ? parseInt(normalizer.integer(text)) : null;
-	};
-
-	exports.number = function(text) {
-	  return text ? parseFloat(normalizer.number(text)) : null;
-	};
-
-
 /***/ }
 /******/ ])
 });
+;
