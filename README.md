@@ -271,7 +271,7 @@ low-level key press events it does not handle itself to
 
 The MIT License (MIT)
 
-Copyright (c) 2014 The Australian National University
+Copyright (c) 2015 The Australian National University
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
