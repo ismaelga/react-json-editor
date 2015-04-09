@@ -28,7 +28,7 @@
     "plexus-objective": "~0.0.1"
   },
   "peerDependencies": {
-    "react": "~0.12.2"
+    "react": ">=0.12.2 <1.0.0"
   },
   "repository": {
     "type": "git",
