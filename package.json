@@ -44,7 +44,7 @@
     "marked": "^0.3.3",
     "plexus-validate": "0.0.4",
     "purecss": "^0.5.0",
-    "react-ghfork": "^0.2.2",
+    "react-ghfork": "^0.3.0",
     "react-hot-loader": "^1.1.6",
     "style-loader": "^0.8.3",
     "url-loader": "^0.5.5",
