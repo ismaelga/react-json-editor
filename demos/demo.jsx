@@ -147,8 +147,8 @@ var FieldWrapper = React.createClass({
       'form-error' + (errors ? '' : ' invisible');
 
     return (
-        <div className={classes.join(' ')} key={this.props.key}>
-          <label htmlFor={this.props.key}>
+        <div className={classes.join(' ')} key={this.props.label}>
+          <label htmlFor={this.props.label}>
             {this.props.title}
           </label>
           <span className={helpClasses} title={this.props.description}>
@@ -178,7 +178,7 @@ var SectionWrapper = React.createClass({
       'form-error' + (errors ? '' : ' hidden');
 
     return (
-        <fieldset className={classes.join(' ')} key={this.props.key}>
+        <fieldset className={classes.join(' ')} key={this.props.label}>
           <legend className="form-section-title">
             {this.props.title}
             <span className={helpClasses} title={this.props.description}>
