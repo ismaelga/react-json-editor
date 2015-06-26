@@ -455,9 +455,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	var ou = __webpack_require__(5);
+	var resolve = __webpack_require__(7);
 
-
-	exports.schema = function(value, schema) {
+	exports.schema = function(value, schema, context) {
 	  var selector, options, selected;
 
 	  selector = ou.getIn(schema, ['x-hints', 'form', 'selector']);
@@ -465,13 +465,17 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return;
 	  }
 
-	  options = schema.oneOf.map(function(alt) {
+	  var dereferenced = schema.oneOf.map(function(alt) {
+	    return resolve(alt, context);
+	  });
+	    
+	  options = dereferenced.map(function(alt) {
 	    return ou.getIn(alt, [ 'properties', selector, 'enum', 0 ]) || "";
 	  });
 
 	  selected = (value || {})[selector] || options[0];
 
-	  return ou.merge(ou.setIn(schema.oneOf[options.indexOf(selected)],
+	  return ou.merge(ou.setIn(dereferenced[options.indexOf(selected)],
 	                           [ 'properties', selector ],
 	                           ou.merge(ou.getIn(schema, [ 'properties', selector]),
 	                                    { enum: options })),
@@ -538,7 +542,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  render: function() {
 	    return $.input({
-	      name: this.props.key,
+	      name: this.props.label,
 	      type: "checkbox",
 	      checked: this.props.value || false,
 	      onChange: this.handleChange });
@@ -560,8 +564,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var ou = __webpack_require__(5);
 
-	var types = __webpack_require__(16);
-	var wrapped = __webpack_require__(17);
+	var types = __webpack_require__(14);
+	var wrapped = __webpack_require__(15);
 
 
 	var FileField = React.createClass({
@@ -620,8 +624,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var React = __webpack_require__(2);
 	var $ = React.DOM;
 
-	var normalizer = __webpack_require__(14);
-	var parser = __webpack_require__(15);
+	var normalizer = __webpack_require__(16);
+	var parser = __webpack_require__(17);
 
 
 	var InputField = React.createClass({
@@ -645,7 +649,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  render: function() {
 	    return $.input({
 	      type      : "text",
-	      name      : this.props.key,
+	      name      : this.props.label,
 	      value     : this.props.value || '',
 	      onKeyPress: this.handleKeyPress,
 	      onChange  : this.handleChange });
@@ -664,8 +668,8 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var React = __webpack_require__(2);
 
-	var normalizer = __webpack_require__(14);
-	var parser = __webpack_require__(15);
+	var normalizer = __webpack_require__(16);
+	var parser = __webpack_require__(17);
 
 
 	var UserDefinedField = React.createClass({
@@ -690,6 +694,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  render: function() {
 	    return React.createElement(this.props.component, {
+	      schema    : this.props.schema,
 	      value     : this.props.value || '',
 	      onKeyPress: this.handleKeyPress,
 	      onChange  : this.handleChange
@@ -698,7 +703,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 	module.exports = UserDefinedField;
-
 
 
 /***/ },
@@ -710,8 +714,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	var React = __webpack_require__(2);
 	var $ = React.DOM;
 
-	var normalizer = __webpack_require__(14);
-	var parser = __webpack_require__(15);
+	var normalizer = __webpack_require__(16);
+	var parser = __webpack_require__(17);
 
 
 	var Selection = React.createClass({
@@ -738,7 +742,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    return $.select(
 	      {
-	        name    : this.props.key,
+	        name    : this.props.label,
 	        value   : this.props.value || this.props.values[0],
 	        onChange: this.handleChange
 	      },
@@ -762,18 +766,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	var ou = __webpack_require__(5);
 
 	var resolve = __webpack_require__(7);
-	var types = __webpack_require__(16);
-	var wrapped = __webpack_require__(17);
+	var types = __webpack_require__(14);
+	var wrapped = __webpack_require__(15);
 
 
 	module.exports = function(fields, props) {
 	  var schema = resolve(props.schema, props.context);
 	  var hints = schema['x-hints'] || {};
 	  var inputComponent = ou.getIn(hints, ['form', 'inputComponent']);
+	  var key = makeKey(props.path);
 
 	  props = ou.merge(props, {
 	    schema: schema,
-	    key   : makeKey(props.path),
+	    key   : key,
+	    label : key,
 	    value : props.getValue(props.path),
 	    errors: props.getErrors(props.path),
 	    type  : schema.type
@@ -825,58 +831,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-
-	exports.string = function(text) {
-	  return text
-	    .replace(/\s+/g, ' ')
-	    .replace(/^ /, '')
-	    .replace(/\u00ad/g, '');
-	};
-
-	exports.integer = function(text) {
-	  return text
-	    .replace(/[^-\d]/g, '')
-	    .replace(/(.)-/g, '$1');
-	};
-
-	exports.number = function(text) {
-	  return text
-	    .replace(/[^-\.e\d]/ig, '')
-	    .replace(/(e[^e]*)e/ig, '$1')
-	    .replace(/([e.][^.]*)\./ig, '$1')
-	    .replace(/([^e])-/ig, '$1')
-	    .replace(/(e-?\d\d\d)\d/ig, '$1');
-	};
-
-
-/***/ },
-/* 15 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	var normalizer = __webpack_require__(14);
-
-
-	exports.string = function(text) {
-	  return normalizer.string(text);
-	};
-
-	exports.integer = function(text) {
-	  return text ? parseInt(normalizer.integer(text)) : null;
-	};
-
-	exports.number = function(text) {
-	  return text ? parseFloat(normalizer.number(text)) : null;
-	};
-
-
-/***/ },
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
 	var ou = __webpack_require__(5);
 
 	var alternative = __webpack_require__(6);
@@ -884,7 +838,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var types = {
 	  alternative: function(fields, props) {
-	    var s = alternative.schema(props.getValue(props.path), props.schema);
+	    var s = alternative.schema(props.getValue(props.path), props.schema, props.context);
 
 	    return types.object(fields, ou.merge(props, { schema: s }));
 	  },
@@ -938,7 +892,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 /***/ },
-/* 17 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -950,15 +904,19 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	var errorClass = function(errors) {
-	  return (errors === null || errors.length === 0) ? '' : 'error';
+	  if(!errors || errors.length === 0) {
+	    return '';
+	  }
+
+	  return 'error';
 	};
 
 	var makeTitle = function(description, errors) {
 	  var parts = [];
-	  if (description !== null && description.length > 0) {
+	  if (description && description.length > 0) {
 	    parts.push(description);
 	  }
-	  if (errors !== null && errors.length > 0) {
+	  if (errors && errors.length > 0) {
 	    parts.push(errors.join('\n'));
 	  }
 	  return parts.join('\n\n');
@@ -973,12 +931,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return $.div(
 	      {
 	        className: classes.join(' '),
-	        key      : this.props.key,
+	        key      : this.props.label,
 	        title    : makeTitle(this.props.description, this.props.errors)
 	      },
 	      $.label(
 	        {
-	          htmlFor: this.props.key
+	          htmlFor: this.props.label
 	        },
 	        this.props.title),
 	      this.props.children);
@@ -997,7 +955,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return $.fieldset(
 	      {
 	        className: classes.join(' '),
-	        key      : this.props.key
+	        key      : this.props.label
 	      },
 	      $.legend(
 	        {
@@ -1012,11 +970,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var propsForWrapper = function(props) {
 	  return {
-	    key        : props.key,
+	    label      : props.label,
 	    path       : props.path,
 	    errors     : props.errors,
 	    classes    : ou.getIn(props.schema, ['x-hints', 'form', 'classes']),
 	    title      : props.schema.title,
+	    type       : props.schema.type,
 	    description: props.schema.description
 	  };
 	};
@@ -1031,6 +990,58 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return React.createElement(props.fieldWrapper || FieldWrapper,
 	    propsForWrapper(props),
 	    field);
+	};
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+
+	exports.string = function(text) {
+	  return text
+	    .replace(/\s+/g, ' ')
+	    .replace(/^ /, '')
+	    .replace(/\u00ad/g, '');
+	};
+
+	exports.integer = function(text) {
+	  return text
+	    .replace(/[^-\d]/g, '')
+	    .replace(/(.)-/g, '$1');
+	};
+
+	exports.number = function(text) {
+	  return text
+	    .replace(/[^-\.e\d]/ig, '')
+	    .replace(/(e[^e]*)e/ig, '$1')
+	    .replace(/([e.][^.]*)\./ig, '$1')
+	    .replace(/([^e])-/ig, '$1')
+	    .replace(/(e-?\d\d\d)\d/ig, '$1');
+	};
+
+
+/***/ },
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var normalizer = __webpack_require__(16);
+
+
+	exports.string = function(text) {
+	  return normalizer.string(text);
+	};
+
+	exports.integer = function(text) {
+	  return text ? parseInt(normalizer.integer(text)) : null;
+	};
+
+	exports.number = function(text) {
+	  return text ? parseFloat(normalizer.number(text)) : null;
 	};
 
 
