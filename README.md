@@ -1,5 +1,7 @@
 # plexus-form
 
+**ATTENTION: THIS PROJECT IS NO LONGER BEING MAINTAINED**
+
 A dynamic form component for [React](http://facebook.github.io/react/) using a
 specification format based on [JSON-Schema](http://json-schema.org/).
 
