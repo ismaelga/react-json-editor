@@ -1,9 +1,7 @@
 'use strict';
 
 var React = require('react');
-
-var validate = require('plexus-validate');
-var Form     = require('..');
+var Form  = require('..');
 
 
 var schema = {
@@ -230,7 +228,6 @@ module.exports = React.createClass({
             <Form buttons={['Dismissed', 'Energise']}
               onSubmit={this.onFormSubmit}
               schema={this.state.schema}
-              validate={validate}
               fieldWrapper={FieldWrapper}
               sectionWrapper={SectionWrapper}
             />

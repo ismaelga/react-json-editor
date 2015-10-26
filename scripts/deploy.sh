@@ -17,7 +17,7 @@ git add .
 git commit -m "Deploy to GitHub Pages"
 
 # Add origin
-git remote add origin git@github.com:AppliedMathematicsANU/plexus-form.git
+git remote add origin git@github.com:ismaelga/react-json-editor.git
 
 # Force push from the current repo's master branch to the remote
 # repo's gh-pages branch. (All previous history on the gh-pages branch

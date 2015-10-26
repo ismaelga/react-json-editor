@@ -1,6 +1,6 @@
-# plexus-form
+# react-json-editor
 
-**=== ATTENTION: THIS PROJECT IS NO LONGER BEING MAINTAINED ===**
+** This is a fork of plexus-form with the intent to keep it maintained **
 
 A dynamic form component for [React](http://facebook.github.io/react/) using a
 specification format based on [JSON-Schema](http://json-schema.org/).
@@ -10,17 +10,15 @@ specification format based on [JSON-Schema](http://json-schema.org/).
 The full code for the demo can be found at
 https://github.com/AppliedMathematicsANU/plexus-form/blob/master/demos/demo.jsx.
 
-Plexus-form takes a JavaScript object describing the shape of the data we want
+react-json-editor takes a JavaScript object describing the shape of the data we want
 a user to provide - a *schema* - and automatically creates a form based on
-that schema. It also validates user inputs by calling a pluggable validator
-which uses the same schema.
+that schema. It also validates user inputs using the same schema.
 
 
 ## Minimal example:
 
     var React    = require('react');
-    var validate = require('plexus-validate');
-    var Form     = require('plexus-form');
+    var Form     = require('react-json-editor');
 
     var schema = {
       title      : "My pretty form",
@@ -44,16 +42,13 @@ which uses the same schema.
 
     React.render(<Form
                    schema   = {schema}
-                   validate = {validate}
                    onSubmit = {onSubmit} />,
                  document.body);
 
 
-## Differences between JSON-Schema and plexus-form schemas:
+## Differences between JSON-Schema and react-json-editor schemas:
 
-Plexus-form and
-[plexus-validate](https://github.com/AppliedMathematicsANU/plexus-validate)
-take a plain JavaScript data object as input rather than a JSON-formatted
+react-json-editor take a plain JavaScript data object as input rather than a JSON-formatted
 string.
 
 The following JSON-Schema properties are supported:
@@ -74,11 +69,11 @@ plexus-validate.
 JSON-Schema references can only point to elements within the schema object
 itself. URI references are not supported.
 
-Plexus-form extends the JSON-Schema specification with two new properties
+react-json-editor extends the JSON-Schema specification with two new properties
 `x-hints` and `x-ordering`. The latter, `x-ordering`, specifies a default
 order for the elements under the current object. The former, `x-hints`, can be
 used to annotate a schema with additional hints on how the data is to be
-handled or displayed. The relevant pieces of information for plexus-form are
+handled or displayed. The relevant pieces of information for react-json-editor are
 found under `schema["x-hints"].form`. We'll explore these extension in more
 detail in the following sections.
 
@@ -98,7 +93,7 @@ detail in the following sections.
 
 ## Custom CSS classes example:
 
-Plexus-form assigns the following CSS classes automatically:
+react-json-editor assigns the following CSS classes automatically:
 
 - `form-section`
 - `form-subsection`
@@ -263,7 +258,6 @@ low-level key press events it does not handle itself to
     React.render(<Form
                    buttons  = {[]}
                    schema   = {schema}
-                   validate = {validate}
                    onSubmit = {onSubmit}
                    handlers = {handlers}
                    submitOnChange = {true} />,
