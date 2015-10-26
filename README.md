@@ -1,14 +1,14 @@
 # react-json-editor
 
-** This is a fork of plexus-form with the intent to keep it maintained **
+#### This is a fork of *plexus-form* with the intent to keep it maintained
 
 A dynamic form component for [React](http://facebook.github.io/react/) using a
 specification format based on [JSON-Schema](http://json-schema.org/).
 
-**[Demo](http://appliedmathematicsanu.github.io/plexus-form/)**
+#### **[Demo](http://ismaelga.github.io/react-json-editor/)**
 
 The full code for the demo can be found at
-https://github.com/AppliedMathematicsANU/plexus-form/blob/master/demos/demo.jsx.
+https://github.com/ismaelga/react-json-editor/blob/master/demos/demo.jsx.
 
 react-json-editor takes a JavaScript object describing the shape of the data we want
 a user to provide - a *schema* - and automatically creates a form based on
@@ -17,6 +17,7 @@ that schema. It also validates user inputs using the same schema.
 
 ## Minimal example:
 
+```js
     var React    = require('react');
     var Form     = require('react-json-editor');
 
@@ -44,6 +45,7 @@ that schema. It also validates user inputs using the same schema.
                    schema   = {schema}
                    onSubmit = {onSubmit} />,
                  document.body);
+```
 
 
 ## Differences between JSON-Schema and react-json-editor schemas:
@@ -79,7 +81,7 @@ detail in the following sections.
 
 
 ## Enforced display order example:
-
+```js
     var schema = {
       type      : "object",
       properties: {
@@ -89,6 +91,7 @@ detail in the following sections.
       },
       "x-ordering": ["name", "email", "comment"]
     };
+```
 
 
 ## Custom CSS classes example:
@@ -101,7 +104,7 @@ react-json-editor assigns the following CSS classes automatically:
 - `form-element`
 
 Additional CSS classes can be specified via `x-hints` like so:
-
+```js
     var schema = {
       type      : "object",
       properties: {
@@ -128,10 +131,10 @@ Additional CSS classes can be specified via `x-hints` like so:
         }
       }
     };
-
+```
 
 ## Alternatives selection example:
-
+```js
     var schema = {
       type      : "object",
       properties: {
@@ -172,7 +175,7 @@ Additional CSS classes can be specified via `x-hints` like so:
         }
       }
     };
-
+```
 
 ## User-defined input component example:
 
@@ -188,7 +191,7 @@ The React component handling a data element (here `Uploader`) must call
 low-level key press events it does not handle itself to
 `this.props.onKeyPress`, which enables the `<Form>` component to handle the
 "Enter" key consistently throughout the form.
-
+```js
     var schema = {
       "x-hints" : {
         form: {
@@ -262,6 +265,7 @@ low-level key press events it does not handle itself to
                    handlers = {handlers}
                    submitOnChange = {true} />,
                  document.body);
+```
 
 # License
 
