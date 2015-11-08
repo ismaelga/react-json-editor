@@ -1,5 +1,9 @@
 # Changelog
 
+## NEXT
+
+  * Clear unique key warning.
+
 ## v0.2.0 (2015-10-26)
 
 	* Start of this fork from plexus-form
