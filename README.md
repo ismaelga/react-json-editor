@@ -14,6 +14,9 @@ react-json-editor takes a JavaScript object describing the shape of the data we 
 a user to provide - a *schema* - and automatically creates a form based on
 that schema. It also validates user inputs using the same schema.
 
+## Contributions are welcome
+
+I'm happy to accept PRs. You can pick up a TODO from https://github.com/ismaelga/react-json-editor/issues/1 if you want to help but don't know how.
 
 ## Minimal example:
 
