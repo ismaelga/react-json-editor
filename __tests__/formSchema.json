@@ -1,0 +1,120 @@
+{
+  "definitions": {
+    "trueFave": {
+      "title": "A true favourite",
+      "type": "object",
+      "properties": {
+        "realFave": {
+          "title": "Yes/No?",
+          "type": "string"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "realFave": {
+              "enum": [
+                "No"
+              ]
+            }
+          }
+        },
+        {
+          "properties": {
+            "realFave": {
+              "enum": [
+                "Yes"
+              ]
+            },
+            "favo": {
+              "title": "Which one is it?",
+              "type": "string",
+              "enum": [
+                "Red",
+                "Blueberry",
+                "rainbow"
+              ]
+            }
+          }
+        }
+      ],
+      "x-hints": {
+        "form": {
+          "selector": "realFave"
+        }
+      }
+    }
+  },
+  "title": "Example form",
+  "description": "A form based on a schema",
+  "type": "object",
+  "x-hints": {
+    "form": {
+      "classes": "my-nice-form"
+    }
+  },
+  "properties": {
+    "color": {
+      "title": "Favourite colour",
+      "type": "object",
+      "properties": {
+        "hasFave": {
+          "title": "Do you have a favourite colour?",
+          "type": "string"
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "hasFave": {
+              "enum": [
+                "no"
+              ]
+            }
+          }
+        },
+        {
+          "properties": {
+            "hasFave": {
+              "enum": [
+                "maybe"
+              ]
+            },
+            "trueFave": {
+              "title": "You must have a favourite colour!",
+              "$ref": "#/definitions/trueFave"
+            }
+          }
+        },
+        {
+          "properties": {
+            "hasFave": {
+              "enum": [
+                "yes"
+              ]
+            },
+            "fave": {
+              "title": "Your favourite colour",
+              "type": "string",
+              "enum": [
+                "",
+                "red",
+                "green",
+                "blue",
+                "yellow",
+                "orange",
+                "purple",
+                "other"
+              ]
+            }
+          }
+        }
+      ],
+      "x-hints": {
+        "form": {
+          "selector": "hasFave"
+        }
+      }
+    }
+  }
+}
