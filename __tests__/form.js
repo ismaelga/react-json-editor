@@ -72,5 +72,22 @@ describe('React Form', () => {
     const actual = renderedForm.state.values;
     expect(actual).toEqual(expected);
     expect(renderedForm.state.errors).toEqual({});
-  })
+  }),
+
+  it('should display other labels for options if enumNames property exists, simple test', () => {
+    const renderedForm = TestUtils.renderIntoDocument(<Form schema={schema2}/>);
+    const likeColorSelect = TestUtils.scryRenderedDOMComponentsWithTag(renderedForm, "select")[0];
+    const expectedLabels = [
+      "Please select an option below",
+      "Yes!",
+      "Nope..."
+    ];
+
+    const actualLabels =
+      Immutable.List(likeColorSelect.options)
+               .map(o => o.value)
+               .toArray();
+
+     expect(actualLabels).toEqual(expectedLabels);
+  });
 });

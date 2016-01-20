@@ -7,7 +7,12 @@
       "properties": {
         "hasFave": {
           "title": "Do you have a favourite colour?",
-          "type": "string"
+          "type": "string",
+          "enumNames": [
+            "Please select an option below",
+            "Yes!",
+            "Nope..."
+          ]
         }
       },
       "oneOf": [
