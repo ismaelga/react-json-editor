@@ -1,0 +1,125 @@
+{
+  "type": "object",
+  "properties": {
+    "color": {
+      "title": "Favourite colour",
+      "type": "object",
+      "properties": {
+        "hasFave": {
+          "title": "Do you have a favourite colour?",
+          "type": "string"
+        }
+      },
+      "oneOf": [
+        {},
+        {
+          "properties": {
+            "hasFave": {
+              "enum": [
+                "no"
+              ]
+            }
+          }
+        },
+        {
+          "properties": {
+            "hasFave": {
+              "enum": [
+                "yes"
+              ]
+            },
+            "fave": {
+              "title": "Your favourite colour",
+              "type": "string",
+              "enum": [
+                "",
+                "red",
+                "green",
+                "blue",
+                "yellow",
+                "orange",
+                "purple",
+                "other"
+              ]
+            }
+          }
+        }
+      ],
+      "x-hints": {
+        "form": {
+          "selector": "hasFave"
+        }
+      }
+    },
+    "movies": {
+      "type": "object",
+      "properties": {
+        "hasFave": {
+          "title": "Do you have a favourite movie?",
+          "type": "string"
+        }
+      },
+      "oneOf": [
+        {},
+        {
+          "properties": {
+            "hasFave": {
+              "enum": [
+                "no"
+              ]
+            }
+          }
+        },
+        {
+          "properties": {
+            "hasFave": {
+              "enum": [
+                "yes"
+              ]
+            },
+            "fave": {
+              "type": "object",
+              "oneOf": [
+                {
+                  "properties": {
+                    "value": {
+                      "enum": [
+                        "foo"
+                      ]
+                    }
+                  }
+                },
+                {
+                  "properties": {
+                    "value": {
+                      "enum": [
+                        "bar"
+                      ]
+                    },
+                    "version": {
+                      "type": "string",
+                      "enum": [
+                        "original",
+                        "remake"
+                      ]
+                    }
+                  }
+                }
+              ],
+              "x-hints": {
+                "form": {
+                  "selector": "value"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "x-hints": {
+        "form": {
+          "selector": "hasFave"
+        }
+      }
+    }
+  }
+}
