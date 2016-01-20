@@ -85,7 +85,7 @@ describe('React Form', () => {
 
     const actualLabels =
       Immutable.List(likeColorSelect.options)
-               .map(o => o.value)
+               .map(o => o.label)
                .toArray();
 
      expect(actualLabels).toEqual(expectedLabels);
