@@ -425,7 +425,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  displayName: 'CheckBox',
 
 	  handleChange: function(event) {
-	    var val = event.target.checked;
+	    var val = event.target.checked ? true : null;
 	    this.props.update(this.props.path, val, val);
 	  },
 	  render: function() {
@@ -522,7 +522,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  array: function(fields, props) {
 	    var move = function(props, i, n) {
-		  return function(to) {
+	      return function(to) {
 	        if(!canMoveUp(i, n) && !canMoveDown(i, n)) return;
 	        var newList = props.getValue(props.path);
 	        var value = newList.splice(to, 1);
@@ -530,7 +530,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        newList.splice(i, 0, value[0]);
 	        props.update(props.path, newList, newList);
 	      };
-		};
+	    };
 	    var canMoveUp = function(i, n) {
 	      return i > 0 && i < n - 1;
 	    };
@@ -648,7 +648,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var dereferenced = schema.oneOf.map(function(alt) {
 	    return resolve(alt, context);
 	  });
-	    
+
 	  options = dereferenced.map(function(alt) {
 	    return ou.getIn(alt, [ 'properties', selector, 'enum', 0 ]) || "";
 	  });
@@ -883,7 +883,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 	module.exports = InputField;
-
 
 
 /***/ },
@@ -1191,6 +1190,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	var ou = __webpack_require__(3);
+	var alternative = __webpack_require__(8);
 
 	var checkNumber = function(schema, instance) {
 	  var errors = [];
@@ -1342,6 +1342,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  if (instance == null)
 	    instance = {};
+
+	  var alternativeSchema = alternative.schema(instance, schema, context);
+	  schema = alternativeSchema || schema;
 
 	  if (instance.constructor !== Object)
 	    result.push({ path: [], errors: ['must be a plain object'] });
