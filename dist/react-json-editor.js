@@ -823,12 +823,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	exports.section = function(props, fields) {
+	  if (React.isValidElement(props.sectionWrapper)) {
+	    return React.cloneElement(props.sectionWrapper, propsForWrapper(props, true), fields);
+	  }
 	  return React.createElement(props.sectionWrapper || SectionWrapper,
 	    propsForWrapper(props, true),
 	    fields);
 	};
 
 	exports.field = function(props, field) {
+	  if (React.isValidElement(props.fieldWrapper)) {
+	    return React.cloneElement(props.fieldWrapper, propsForWrapper(props), field);
+	  }
 	  return React.createElement(props.fieldWrapper || FieldWrapper,
 	    propsForWrapper(props),
 	    field);
