@@ -1,4 +1,5 @@
 jest.dontMock('./schema.json')
+    .dontMock('./schema2.json')
     .dontMock('immutable')
     .dontMock('..');
 
@@ -7,6 +8,7 @@ describe('React Form', () => {
   const ReactDOM = require('react-dom');
   const TestUtils = require('react-addons-test-utils');
   const Form = require("..");
+  const schema = require('./schema2.json');
   const schema2 = require('./schema.json');
   const Immutable = require('immutable');
 
@@ -89,5 +91,70 @@ describe('React Form', () => {
                .toArray();
 
      expect(actualLabels).toEqual(expectedLabels);
+  }),
+  
+  it('should render inputComponent', () => {
+     const TestComponent = React.createClass({
+          render() {
+            return <p className="test">Hello, world!</p>;  
+          }
+      });
+      
+      const handlers = {
+          testComponent : TestComponent
+      };
+      const renderedForm = TestUtils.renderIntoDocument(<Form schema={schema}
+                                                              handlers={handlers}/>);
+                                                              
+      const paragraph = TestUtils.findRenderedDOMComponentWithClass(renderedForm, "test");
+      
+      expect(TestUtils.isCompositeComponentWithType(paragraph, TestComponent));
+  }),
+  
+  it('should render nested inputComponent', () => {
+      const TestComponent = React.createClass({
+          render() {
+            return <p className="test">Hello, world!</p>;  
+          }
+      });
+      
+      const handlers = {
+          testComponent : TestComponent
+      };
+      
+      const nestedSchema = {
+          "properties": {
+              "Test": {
+                  "x-hints": {
+                      "form": {
+                          "inputComponent": "testComponent"
+                      }
+                  }
+              }
+          }
+      };
+      const renderedForm = TestUtils.renderIntoDocument(<Form schema={nestedSchema}
+                                                              handlers={handlers}/>);
+                                                              
+      const paragraph = TestUtils.findRenderedDOMComponentWithClass(renderedForm, "test");
+      
+      expect(TestUtils.isCompositeComponentWithType(paragraph, TestComponent));
+  }),
+ 
+  it('should feed schema to inputComponent', () => {
+      const TestComponent = React.createClass({
+          componentDidMount() {
+              expect(this.props.schema).toEqual(schema);              
+          },
+          
+          render() {
+            return <p>Test</p>;  
+          }
+      });
+      const handlers = {
+          testComponent : TestComponent
+      };
+      const renderedForm = TestUtils.renderIntoDocument(<Form schema={schema}
+                                                              handlers={handlers}/>);
   });
 });

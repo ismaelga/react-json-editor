@@ -1,0 +1,15 @@
+{
+    "properties":{
+      "FirstName":{
+          "type":"string"
+      },
+      "LastName":{
+          "type":"string"          
+      }  
+    },
+    "x-hints": {
+        "form": {
+            "inputComponent": "testComponent"
+        }
+    }
+}
