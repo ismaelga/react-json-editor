@@ -257,6 +257,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return typeof x == 'number' && x >= 0 && x % 1 == 0;
 	};
 
+	var isNil = function(x) {
+	  return (typeof x === 'undefined' || x === null);
+	};
+
 	var object = function() {
 	  var args = Array.prototype.slice.call(arguments);
 	  var result = [];
@@ -391,7 +395,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  prune  : prune,
 	  split  : split,
 	  map    : map,
-	  mapKeys: mapKeys
+	  mapKeys: mapKeys,
+	  isNil  : isNil
 	};
 
 
@@ -848,6 +853,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	var React = __webpack_require__(2);
+	var ou = __webpack_require__(3);
 	var $ = React.DOM;
 
 	var normalizer = __webpack_require__(12);
@@ -873,10 +879,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    }
 	  },
 	  render: function() {
+	    var value = ou.isNil(this.props.value)? '' : this.props.value;
 	    return $.input({
 	      type      : "text",
 	      name      : this.props.label,
-	      value     : this.props.value || '',
+	      value     : value,
 	      onKeyPress: this.handleKeyPress,
 	      onChange  : this.handleChange });
 	  }
@@ -922,18 +929,18 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	var normalizer = __webpack_require__(12);
-
+	var ou = __webpack_require__(3);
 
 	exports.string = function(text) {
 	  return normalizer.string(text);
 	};
 
 	exports.integer = function(text) {
-	  return text ? parseInt(normalizer.integer(text)) : null;
+	  return ou.isNil(text) ? null : parseInt(normalizer.integer(text));
 	};
 
 	exports.number = function(text) {
-	  return text ? parseFloat(normalizer.number(text)) : null;
+	  return ou.isNil(text) ? null : parseFloat(normalizer.number(text));
 	};
 
 
@@ -1190,7 +1197,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	'use strict';
 
 	var ou = __webpack_require__(3);
-	var alternative = __webpack_require__(8);
 
 	var checkNumber = function(schema, instance) {
 	  var errors = [];
@@ -1342,9 +1348,6 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  if (instance == null)
 	    instance = {};
-
-	  var alternativeSchema = alternative.schema(instance, schema, context);
-	  schema = alternativeSchema || schema;
 
 	  if (instance.constructor !== Object)
 	    result.push({ path: [], errors: ['must be a plain object'] });
