@@ -876,6 +876,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return $.input({
 	      type      : "text",
 	      disabled  : this.props.disabled,
+	      hidden    : this.props.hidden,
 	      name      : this.props.label,
 	      value     : this.props.value || '',
 	      onKeyPress: this.handleKeyPress,
@@ -1054,6 +1055,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var hints = schema['x-hints'] || {};
 	  var inputComponent = ou.getIn(hints, ['form', 'inputComponent']);
 	  var disabled = ou.getIn(hints, ['form', 'disabled']);
+	  var hidden = ou.getIn(hints,['form', 'hidden'])
 	  var key = makeKey(props.path);
 
 	  props = ou.merge(props, {
@@ -1063,7 +1065,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    value : props.getValue(props.path),
 	    errors: props.getErrors(props.path),
 	    type  : schema.type,
-	    disabled : disabled
+	    disabled : disabled,
+	    hidden : hidden
 	  });
 
 	  if(props.moveUp !== undefined) {
