@@ -130,13 +130,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	    if (this.props.submitOnChange) {
 	      this.props.onSubmit(output, null, errors);
 	    }
-	    else {
-	      this.setState({
-	        values: values,
-	        output: output,
-	        errors: errors
-	      });
-	    }
+
+	    this.setState({
+	      values: values,
+	      output: output,
+	      errors: errors
+	    });
 	  },
 	  getValue: function(path) {
 	    return ou.getIn(this.state.values, path);
@@ -151,7 +150,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  preventSubmit: function(event) {
 	    event.preventDefault();
 	  },
-	  handleSubmit: function(event) {
+	  handleSubmit: function(event) {  
 	    this.props.onSubmit(this.state.output,
 	                        event.target.value,
 	                        this.state.errors);
@@ -165,7 +164,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    var submit = this.handleSubmit;
 
 	    if (typeof this.props.buttons === 'function') {
-	      return this.props.buttons(submit);
+	      return this.props.buttons(submit);;
 	    }
 	    else {
 	      var buttons = (this.props.buttons || ['Cancel', 'Submit'])
@@ -433,7 +432,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      name: this.props.label,
 	      type: "checkbox",
 	      checked: this.props.value || false,
-	      onChange: this.handleChange });
+	      onChange: this.handleChange,
+	      disabled: this.props.disabled });
 	  }
 	});
 
@@ -875,6 +875,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  render: function() {
 	    return $.input({
 	      type      : "text",
+	      disabled  : this.props.disabled,
+	      hidden    : this.props.hidden,
 	      name      : this.props.label,
 	      value     : this.props.value || '',
 	      onKeyPress: this.handleKeyPress,
@@ -1021,7 +1023,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	      {
 	        name    : this.props.label,
 	        value   : this.props.value || this.props.values[0],
-	        onChange: this.handleChange
+	        onChange: this.handleChange,
+	        disabled: this.props.disabled
 	      },
 	      this.props.values.map(function(opt, i) {
 	        return $.option({ key: opt, value: opt }, names[i] || opt);
@@ -1051,6 +1054,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var schema = resolve(props.schema, props.context);
 	  var hints = schema['x-hints'] || {};
 	  var inputComponent = ou.getIn(hints, ['form', 'inputComponent']);
+	  var disabled = ou.getIn(hints, ['form', 'disabled']);
+	  var hidden = ou.getIn(hints,['form', 'hidden'])
 	  var key = makeKey(props.path);
 
 	  props = ou.merge(props, {
@@ -1059,7 +1064,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	    label : key,
 	    value : props.getValue(props.path),
 	    errors: props.getErrors(props.path),
-	    type  : schema.type
+	    type  : schema.type,
+	    disabled : disabled,
+	    hidden : hidden
 	  });
 
 	  if(props.moveUp !== undefined) {
