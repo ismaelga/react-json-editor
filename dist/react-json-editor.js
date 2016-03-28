@@ -973,6 +973,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  },
 	  render: function() {
 	    return React.createElement(this.props.component, {
+	      name      : this.props.label,
 	      schema    : this.props.schema,
 	      value     : this.props.value || '',
 	      onKeyPress: this.handleKeyPress,
