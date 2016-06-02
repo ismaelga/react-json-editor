@@ -9,7 +9,8 @@ require('./demo.css');
 
 
 var React = require('react'),
-    App = require('./app');
+    App = require('./app'),
+    ReactDOM = require('react-dom');
 
 
-React.render(<App />, document.body);
+ReactDOM.render(<App />, document.body);
