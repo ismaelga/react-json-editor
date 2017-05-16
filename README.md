@@ -44,7 +44,7 @@ I'm happy to accept PRs. You can pick up a TODO from https://github.com/ismaelga
             'Errors: '+JSON.stringify(errors));
     };
 
-    React.render(<Form
+    ReactDOM.render(<Form
                    schema   = {schema}
                    onSubmit = {onSubmit} />,
                  document.body);
@@ -261,7 +261,7 @@ low-level key press events it does not handle itself to
       uploader: Uploader
     };
 
-    React.render(<Form
+    ReactDOM.render(<Form
                    buttons  = {[]}
                    schema   = {schema}
                    onSubmit = {onSubmit}

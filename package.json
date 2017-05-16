@@ -29,7 +29,7 @@
   },
   "main": "dist/react-json-editor.js",
   "peerDependencies": {
-    "react": ">=0.12.2 <1.0.0"
+    "react": ">=0.12.2 <16.0.0"
   },
   "repository": {
     "type": "git",
@@ -48,12 +48,11 @@
     "jsx-loader": "^0.12.2",
     "marked": "^0.3.3",
     "purecss": "^0.5.0",
-    "react": "^0.14.6",
-    "react-addons-test-utils": "^0.14.6",
-    "react-addons-update": "^0.14.6",
-    "react-dom": "^0.14.6",
+    "react": "<16.0.0",
+    "react-addons-test-utils": "<16.0.0",
+    "react-addons-update": "<16.0.0",
+    "react-dom": "<16.0.0^0.14.6",
     "react-ghfork": "^0.3.0",
-    "react-hot-loader": "^1.1.6",
     "style-loader": "^0.8.3",
     "url-loader": "^0.5.5",
     "webpack": "^1.6.0",

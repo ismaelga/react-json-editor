@@ -24,7 +24,7 @@ module.exports = extend(common, {
     module: {
         loaders: common.loaders.concat([{
             test: /\.jsx?$/,
-            loaders: ['react-hot', 'jsx-loader?harmony'],
+            loaders: ['jsx-loader?harmony'],
         }])
     }
 });
