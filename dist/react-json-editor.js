@@ -315,31 +315,44 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return result;
 	};
 
-
 	var prune = function(root) {
-	  var result, isArray, key, val
+	  var result, isArray, key, val, nullValues, childResult;
 
-	  if (root == null || root === '')
-	    result = null;
-	  else if (root.constructor === Array || root.constructor === Object) {
-	    isArray = Array.isArray(root);
-	    result = isArray ? [] : {};
-	    for (key in root) {
-	      val = prune(root[key]);
-	      if (val != null) {
-	        if (isArray)
-	          result.push(val);
-	        else
-	          result[key] = val;
-	      }
-	    }
-
-	    if (Object.keys(result).length == 0)
+	    if (root == null || root === '')
 	      result = null;
-	  } else
-	    result = root;
+	    else if (root.constructor === Array || root.constructor === Object) {
+	      isArray = Array.isArray(root);
+	      result = isArray ? [] : {};
+	      for (key in root) {
+	        if (root.hasOwnProperty(key)) {
+	          childResult = prune(root[key]);
+	          val = childResult.value;
+	          nullValues |= childResult.nullValues;
+	          if (val !== null) {
+	            if (isArray)
+	              result.push(val);
+	            else
+	              result[key] = val;
+	          } else {
+	            nullValues = true;
+	          }
+	        }
+	      }
 
-	  return result;
+	      if (!nullValues) {
+	        result = root;
+	      }
+
+	      if (Object.keys(result).length === 0) {
+	        result = null;
+	      }
+	    } else
+	      result = root;
+
+	    return {
+	      value: result,
+	      nullValues: nullValues
+	    };
 	};
 
 
@@ -521,85 +534,88 @@ return /******/ (function(modules) { // webpackBootstrap
 	    return types.object(fields, ou.merge(props, { schema: s }));
 	  },
 	  array: function(fields, props) {
-	    var move = function(props, i, n) {
-	      return function(to) {
-	        if(!canMoveUp(i, n) && !canMoveDown(i, n)) return;
-	        var newList = props.getValue(props.path);
-	        var value = newList.splice(to, 1);
+	    return function() {
+	      var move = function(props, i, n) {
+	        return function(to) {
+	          if(!canMoveUp(i, n) && !canMoveDown(i, n)) return;
+	          var newList = props.getValue(props.path);
+	          var value = newList.splice(to, 1);
 
-	        newList.splice(i, 0, value[0]);
-	        props.update(props.path, newList, newList);
+	          newList.splice(i, 0, value[0]);
+	          props.update(props.path, newList, newList);
+	        };
 	      };
-	    };
-	    var canMoveUp = function(i, n) {
-	      return i > 0 && i < n - 1;
-	    };
-	    var moveUp = function(props, i, n) {
-	      return function() {
-	        if(!canMoveUp(i, n)) return;
-	        var newList = props.getValue(props.path);
-	        var value = newList.splice(i, 1);
-
-	        newList.splice(i - 1, 0, value[0]);
-	        props.update(props.path, newList, newList);
+	      var canMoveUp = function(i, n) {
+	        return i > 0 && i < n - 1;
 	      };
-	    };
+	      var moveUp = function(props, i, n) {
+	        return function() {
+	          if(!canMoveUp(i, n)) return;
+	          var newList = props.getValue(props.path);
+	          var value = newList.splice(i, 1);
 
-	    var canMoveDown = function(i, n) {
-	      return n > 1 && i < n - 2;
-	    };
-	    var moveDown = function(props, i, n) {
-	      return function() {
-	        if(!canMoveDown(i, n)) return;
-	        var newList = props.getValue(props.path);
-	        var value = newList.splice(i, 1);
-
-	        newList.splice(i + 1, 0, value[0]);
-	        props.update(props.path, newList, newList);
+	          newList.splice(i - 1, 0, value[0]);
+	          props.update(props.path, newList, newList);
+	        };
 	      };
-	    };
 
-	    var canRemoveItem = function(i, n) {
-	      return i < n;
-	    };
-
-	    var removeItem = function(props, i, n) {
-	      return function() {
-	        if(!canRemoveItem(i, n)) return;
-
-	        var newList = props.getValue(props.path);
-	        newList.splice(i, 1);
-	        props.update(props.path, newList, newList);
+	      var canMoveDown = function(i, n) {
+	        return n > 1 && i < n - 2;
 	      };
+	      var moveDown = function(props, i, n) {
+	        return function() {
+	          if(!canMoveDown(i, n)) return;
+	          var newList = props.getValue(props.path);
+	          var value = newList.splice(i, 1);
+
+	          newList.splice(i + 1, 0, value[0]);
+	          props.update(props.path, newList, newList);
+	        };
+	      };
+
+	      var canRemoveItem = function(i, n) {
+	        return i < n;
+	      };
+
+	      var removeItem = function(props, i, n) {
+	        return function() {
+	          if(!canRemoveItem(i, n)) return;
+
+	          var newList = props.getValue(props.path);
+	          newList.splice(i, 1);
+	          props.update(props.path, newList, newList);
+	        };
+	      };
+
+	      var n = (props.getValue(props.path) || []).length + 1;
+	      var list = [];
+	      for (var i = 0; i < n; ++i) {
+	        list.push(fields.make(fields, ou.merge(props, {
+	          schema       : props.schema.items,
+	          path         : props.path.concat(i),
+	          move         : move(props, i, n),
+	          moveUp       : moveUp(props, i, n),
+	          moveDown     : moveDown(props, i, n),
+	          canMoveUp    : canMoveUp(i, n),
+	          canMoveDown  : canMoveDown(i, n),
+	          removeItem   : removeItem(props, i, n),
+	          canRemoveItem: canRemoveItem(i, n)
+	        })));
+	      }
+
+	      return list;
 	    };
-
-	    var n = (props.getValue(props.path) || []).length + 1;
-	    var list = [];
-	    for (var i = 0; i < n; ++i) {
-	      list.push(fields.make(fields, ou.merge(props, {
-	        schema       : props.schema.items,
-	        path         : props.path.concat(i),
-	        move         : move(props, i, n),
-	        moveUp       : moveUp(props, i, n),
-	        moveDown     : moveDown(props, i, n),
-	        canMoveUp    : canMoveUp(i, n),
-	        canMoveDown  : canMoveDown(i, n),
-	        removeItem   : removeItem(props, i, n),
-	        canRemoveItem: canRemoveItem(i, n)
-	      })));
-	    }
-
-	    return list;
 	  },
 	  object: function(fields, props) {
-	    var keys = fullOrdering(props.schema['x-ordering'], props.schema.properties);
-
-	    return keys.map(function(key) {
-	      return fields.make(fields, ou.merge(props, {
-	        schema: props.schema.properties[key],
-	        path  : props.path.concat(key)
-	      }));
-	    });
+	    return function() {
+	      var keys = fullOrdering(props.schema['x-ordering'], props.schema.properties);
+	      return keys.map(function(key) {
+	        return fields.make(fields, ou.merge(props, {
+	          schema: props.schema.properties[key],
+	          path  : props.path.concat(key)
+	        }));
+	      });
+	    };
 	  },
 	};
 
@@ -735,6 +751,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 	var FieldWrapper = React.createClass({displayName: "FieldWrapper",
+	  shouldComponentUpdate: function(nextProps) {
+	    return this.props.value !== nextProps.value;
+	  },
 	  render: function() {
 	    var classes = [].concat(errorClass(this.props.errors) || [],
 	                            'form-element',
@@ -756,6 +775,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	});
 
 	var SectionWrapper = React.createClass({displayName: "SectionWrapper",
+	  shouldComponentUpdate: function(nextProps) {
+	    return this.props.value !== nextProps.value;
+	  },
 	  render: function() {
 	    var level = this.props.path.length;
 	    var classes = [].concat('form-section',
@@ -789,7 +811,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	    title      : props.schema.title,
 	    type       : props.schema.type,
 	    description: props.schema.description,
-	    schema     : props.schema
+	    schema     : props.schema,
+	    value      : props.value
 	  };
 
 	  if(section && props.isArrayItem) {
@@ -1136,7 +1159,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 
 	module.exports = function(data, schema, context) {
-	  return ou.prune(withDefaultOptions(data, schema, context));
+	  return ou.prune(withDefaultOptions(data, schema, context)).value;
 	};
 
 	function withDefaultOptions(data, schema, context) {
@@ -1151,18 +1174,23 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (effectiveSchema['enum']) {
 	    result = data || effectiveSchema['enum'][0];
 	  } else if (effectiveSchema.type === 'object') {
-	    result = ou.merge(data);
+	    var property;
+	    result = data;
 	    for (key in effectiveSchema.properties) {
-	      result[key] = withDefaultOptions((data || {})[key],
-	                                       effectiveSchema.properties[key],
-	                                       context);
+	      property = (data || {})[key];
+	      if (property) {
+	        result[key] = withDefaultOptions(property, effectiveSchema.properties[key], context);
+	      }
 	    }
 	  } else if (effectiveSchema.type === 'array') {
-	    result = [];
-	    for (key = 0; key < (data || []).length; ++key) {
-	      result[key] = withDefaultOptions((data || [])[key],
-	                                       effectiveSchema.items,
-	                                       context);
+	    var item;
+	    var arrayLength = (data || []).length;
+	    result = arrayLength > 0 ? [] : data;
+	    for (key = 0; key < arrayLength; ++key) {
+	      item = (data || [])[key];
+	      if (item) {
+	        result[key] = withDefaultOptions(item, effectiveSchema.items, context);
+	      }
 	    }
 	  } else {
 	    result = data;
