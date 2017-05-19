@@ -1430,17 +1430,28 @@ return /******/ (function(modules) { // webpackBootstrap
 	};
 
 
-	var validate = function(schema, instance, context) {
+	var validate = function (schema, instance, context) {
 	  var effectiveContext = context || schema;
-	  var effectiveSchema  = resolve(schema, effectiveContext);
+	  var effectiveSchema = resolve(schema, effectiveContext);
 
 	  if (effectiveSchema.allOf) {
 	    var results = [ou.without(effectiveSchema, 'allOf')]
 	      .concat(effectiveSchema.allOf)
-	      .map(function(schema) {
+	      .map(function (schema) {
 	        return validate(schema, instance, effectiveContext);
 	      });
 	    return cat(results);
+	  } else if (effectiveSchema.anyOf) {
+	    var _validateSchema = function (schema) {
+	      return validate(schema, instance, effectiveContext);
+	    };
+
+	    var results = [ou.without(effectiveSchema, 'anyOf')].map(_validateSchema);
+	    var resultsAnyOf = effectiveSchema.anyOf.map(_validateSchema);
+	    if (cat(resultsAnyOf).length < effectiveSchema.anyOf.length) {
+	      resultsAnyOf = [];
+	    }
+	    return cat(results.concat(resultsAnyOf));
 	  } else {
 	    var type = effectiveSchema.enum ? 'enum' : effectiveSchema.type;
 	    if (type)
